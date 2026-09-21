@@ -1,0 +1,971 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Kawage Sushi — Restaurante Japonês em São Bernardo do Campo</title>
+<meta name="description" content="Rodízio completo de sushi e sashimi com bebida e sobremesa incluídas. Aberto todos os dias a partir das 11h30. São Bernardo do Campo, SP."/>
+<meta name="robots" content="index, follow"/>
+<meta name="theme-color" content="#0A0C09"/>
+<link rel="canonical" href="https://kawage-sushi.vercel.app/"/>
+
+<!-- Open Graph -->
+<meta property="og:title" content="Kawage Sushi — Restaurante Japonês"/>
+<meta property="og:description" content="Rodízio completo com bebida e sobremesa. São Bernardo do Campo, SP."/>
+<meta property="og:image" content="imagens/imgi_38_619607577_18300069337277716_2491331612711761126_n.jpg"/>
+<meta property="og:type" content="restaurant"/>
+<meta property="og:locale" content="pt_BR"/>
+
+<!-- Twitter -->
+<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:title" content="Kawage Sushi"/>
+<meta name="twitter:description" content="Rodízio completo com bebida e sobremesa. SBC, SP."/>
+
+<!-- Favicon inline SVG -->
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🍣</text></svg>"/>
+
+<!-- Fonts -->
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap" rel="stylesheet"/>
+
+<!-- Structured Data (Local Business) -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Restaurant",
+  "name": "Kawage Sushi",
+  "description": "Rodízio completo de sushi e sashimi com bebida e sobremesa incluídas.",
+  "address": {
+    "@type": "PostalAddress",
+    "streetAddress": "R. Continental, 372",
+    "addressLocality": "São Bernardo do Campo",
+    "addressRegion": "SP",
+    "postalCode": "09750-060",
+    "addressCountry": "BR"
+  },
+  "telephone": "+551141215276",
+  "openingHours": "Mo-Su 11:30-23:00",
+  "priceRange": "R$100-R$140",
+  "aggregateRating": {
+    "@type": "AggregateRating",
+    "ratingValue": "4.5",
+    "reviewCount": "2851"
+  },
+  "servesCuisine": "Japanese",
+  "image": "imagens/imgi_38_619607577_18300069337277716_2491331612711761126_n.jpg"
+}
+</script>
+
+<style>
+/* ── RESET ── */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{overflow-x:clip;scroll-behavior:smooth}
+body{
+  font-family:'DM Sans',system-ui,sans-serif;
+  background:#0A0C09;color:#EDE8E0;
+  -webkit-font-smoothing:antialiased;
+  overflow-x:clip;
+}
+a{color:inherit;text-decoration:none}
+img{display:block;width:100%;object-fit:cover}
+button{border:none;background:none;font:inherit;color:inherit;cursor:pointer}
+
+/* ── TOKENS ── */
+:root{
+  --bg:#0A0C09;
+  --ink:#EDE8E0;
+  --verd:#4E6B44;
+  --mist:rgba(237,232,224,.34);
+  --serif:'Cormorant Garamond',Georgia,serif;
+  --sans:'DM Sans',system-ui,sans-serif;
+  --exp:cubic-bezier(0.16,1,0.3,1);
+  --pad:clamp(18px,5vw,72px);
+}
+
+/* ── ENVIRONMENT ── */
+body::before{
+  content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
+  background:radial-gradient(ellipse 55% 45% at 25% 65%,rgba(78,107,68,.05) 0%,transparent 68%);
+  animation:envPulse 60s ease-in-out infinite;animation-delay:-26s;
+}
+@keyframes envPulse{0%,100%{opacity:.5;transform:scale(1)}50%{opacity:1;transform:scale(1.12)}}
+
+/* ── GRAIN ── */
+body::after{
+  content:'';position:fixed;inset:-60%;width:220%;height:220%;
+  z-index:9000;pointer-events:none;opacity:.026;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.65' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size:512px 512px;
+  animation:grain .5s steps(2) infinite;will-change:transform;
+}
+@keyframes grain{0%{transform:translate(0,0)}25%{transform:translate(-2%,-3%)}50%{transform:translate(3%,-1%)}75%{transform:translate(-3%,2%)}100%{transform:translate(2%,3%)}}
+body.paused *,body.paused *::before,body.paused *::after{animation-play-state:paused!important}
+@media(prefers-reduced-motion:reduce){
+  body::after,body::before{animation:none}
+  .hero-cue-line{animation:none}
+  .swi{transition:none!important}
+  .sig-rule{transition:none!important}
+}
+
+/* ── SKIP ── */
+.skip{
+  position:absolute;top:-100px;left:var(--pad);
+  background:var(--verd);color:var(--ink);
+  padding:8px 16px;font-size:13px;z-index:10000;
+  transition:top .15s;
+}
+.skip:focus{top:12px}
+
+/* ══════════════════════════════════════════════════════════
+   NAV — RESPONSIVE
+   ══════════════════════════════════════════════════════════ */
+nav{
+  position:fixed;top:0;left:0;right:0;z-index:500;
+  display:flex;justify-content:space-between;align-items:center;
+  padding:22px var(--pad);
+  mix-blend-mode:difference;
+}
+.nav-logo{
+  font-family:var(--serif);font-size:14px;font-weight:600;
+  letter-spacing:.14em;text-transform:uppercase;color:var(--ink);
+  z-index:2;
+}
+.nav-links{display:flex;gap:28px;list-style:none}
+.nav-links a{
+  font-size:9px;letter-spacing:.22em;text-transform:uppercase;
+  color:var(--ink);opacity:.5;transition:opacity .2s;
+}
+.nav-links a:hover{opacity:1}
+
+/* Hamburger — mobile only */
+.nav-toggle{
+  display:none;
+  flex-direction:column;gap:5px;
+  width:28px;cursor:pointer;
+  z-index:2;padding:4px;
+}
+.nav-toggle span{
+  display:block;height:1px;background:var(--ink);
+  transition:transform .3s var(--exp),opacity .2s;
+}
+.nav-open .nav-toggle span:nth-child(1){transform:translateY(6px) rotate(45deg)}
+.nav-open .nav-toggle span:nth-child(2){opacity:0}
+.nav-open .nav-toggle span:nth-child(3){transform:translateY(-6px) rotate(-45deg)}
+
+/* Mobile nav drawer */
+@media(max-width:640px){
+  .nav-links{
+    position:fixed;inset:0;
+    background:rgba(10,12,9,.97);
+    flex-direction:column;
+    align-items:center;justify-content:center;
+    gap:32px;
+    opacity:0;pointer-events:none;
+    transition:opacity .35s var(--exp);
+    mix-blend-mode:normal;
+    z-index:1;
+  }
+  .nav-open .nav-links{opacity:1;pointer-events:all}
+  .nav-links a{font-size:14px;letter-spacing:.24em;opacity:.7}
+  .nav-toggle{display:flex}
+}
+
+/* ── WORD SPLIT MASK ── */
+.sw{display:inline-block;overflow:hidden;vertical-align:top;padding-bottom:.18em;margin-bottom:-.18em}
+.swi{display:inline-block;transform:translateY(108%)}
+
+/* ══════════════════════════════════════════════════════════
+   HERO — AUTOPLAY VIDEO + SCROLL COMPOSITION
+   ══════════════════════════════════════════════════════════ */
+#hero-pin{position:relative;height:250vh;overflow:clip}
+@media(max-width:640px){#hero-pin{height:220vh}}
+
+.hero-stage{
+  position:sticky;top:0;width:100%;height:100vh;
+  overflow:hidden;background:#0A0C09;
+}
+
+/* VIDEO */
+#heroVideoWrap{
+  position:absolute;inset:0;z-index:1;
+  will-change:transform,opacity;
+  transform-origin:center center;
+}
+#heroVideo{
+  width:100%;height:100%;
+  object-fit:cover;object-position:center center;
+  display:block;opacity:0;
+  transition:opacity .8s ease;
+  pointer-events:none;
+}
+#heroVideo.ready{opacity:1}
+
+/* PHOTO FALLBACK */
+#heroBgPhoto{
+  position:absolute;inset:0;z-index:0;
+  will-change:transform;transition:opacity .6s;
+}
+#heroBgPhoto img{width:100%;height:115%;object-fit:cover;object-position:center 25%}
+.video-ready #heroBgPhoto{opacity:0;pointer-events:none}
+
+/* GRADE + SCRIMS */
+.hero-grade{position:absolute;inset:0;z-index:2;pointer-events:none;background:rgba(10,12,9,.18);mix-blend-mode:multiply}
+.hero-scrim-base{
+  position:absolute;inset:0;z-index:3;pointer-events:none;
+  background:
+    linear-gradient(to top,rgba(10,12,9,.95) 0%,rgba(10,12,9,.3) 28%,transparent 55%),
+    linear-gradient(to bottom,rgba(10,12,9,.5) 0%,transparent 22%);
+}
+.hero-scrim-scroll{position:absolute;inset:0;z-index:4;pointer-events:none;background:rgba(10,12,9,0);will-change:background}
+
+/* TITLE */
+.hero-title-group{
+  position:absolute;
+  bottom:clamp(32px,6vh,80px);left:var(--pad);right:var(--pad);
+  z-index:5;
+  display:flex;justify-content:space-between;align-items:flex-end;
+  will-change:transform,opacity;
+}
+.hero-title{
+  font-family:var(--serif);
+  font-size:clamp(52px,12vw,192px);
+  font-weight:300;line-height:.88;
+  letter-spacing:-.025em;color:var(--ink);
+  text-shadow:0 2px 32px rgba(10,12,9,.6);
+}
+.hero-title em{font-style:italic;font-weight:300}
+.hero-meta{display:flex;flex-direction:column;align-items:flex-end;gap:6px;padding-bottom:4px}
+.hero-rating{font-family:var(--serif);font-size:clamp(15px,2vw,20px);font-weight:300;color:var(--ink)}
+.hero-loc{font-size:8px;letter-spacing:.25em;text-transform:uppercase;color:var(--mist)}
+@media(max-width:480px){.hero-meta{display:none}}
+
+/* MID BEAT */
+.hero-mid{
+  position:absolute;top:50%;left:0;right:0;
+  text-align:center;z-index:5;
+  opacity:0;pointer-events:none;
+  will-change:opacity,transform;
+  padding:0 var(--pad);
+}
+.hero-mid-a{
+  font-family:var(--serif);
+  font-size:clamp(16px,3vw,42px);
+  font-weight:300;font-style:italic;letter-spacing:.06em;
+  color:var(--ink);display:block;
+  text-shadow:0 2px 24px rgba(10,12,9,.9);
+}
+.hero-mid-b{font-size:8px;letter-spacing:.28em;text-transform:uppercase;color:rgba(237,232,224,.5);display:block;margin-top:.6em}
+
+/* SCROLL CUE */
+.hero-cue{
+  position:absolute;right:var(--pad);top:50%;
+  transform:translateY(-50%);z-index:5;
+  display:flex;flex-direction:column;align-items:center;gap:12px;
+}
+.hero-cue-label{font-size:7px;letter-spacing:.3em;text-transform:uppercase;color:var(--mist);writing-mode:vertical-rl}
+.hero-cue-line{width:1px;height:56px;background:linear-gradient(to bottom,transparent,var(--mist));transform-origin:top;animation:cueLine 2.8s ease-in-out infinite}
+@keyframes cueLine{0%,100%{transform:scaleY(1);opacity:.3}50%{transform:scaleY(.3);opacity:.65}}
+@media(max-width:480px){.hero-cue{display:none}}
+
+/* ══════════════════════════════════════════════════════════
+   STATEMENT
+   ══════════════════════════════════════════════════════════ */
+#statement{position:relative;z-index:1;padding:clamp(64px,12vw,168px) var(--pad);border-top:1px solid rgba(237,232,224,.05)}
+.sig-rule{display:block;height:1px;background:var(--ink);width:0;transition:width 1.5s var(--exp);margin-bottom:clamp(28px,4vw,60px)}
+.sig-rule.drawn{width:100%}
+.stmt-eye{font-size:8px;letter-spacing:.32em;text-transform:uppercase;color:var(--verd);margin-bottom:clamp(22px,3.5vw,52px);display:block}
+.stmt-q{font-family:var(--serif);font-size:clamp(24px,4.8vw,76px);font-weight:300;font-style:italic;line-height:1.18;color:var(--ink);max-width:1100px}
+.stmt-foot{margin-top:clamp(20px,2.5vw,44px);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--mist)}
+
+/* ══════════════════════════════════════════════════════════
+   ABOUT
+   ══════════════════════════════════════════════════════════ */
+#about{
+  position:relative;z-index:1;min-height:min(90vh,640px);
+  display:flex;align-items:flex-end;overflow:hidden;
+  border-top:1px solid rgba(237,232,224,.05);
+}
+.ab-bg{position:absolute;inset:0;z-index:0;will-change:transform}
+.ab-bg img{width:100%;height:115%;object-fit:cover;object-position:center 20%}
+.ab-vignette{
+  position:absolute;inset:0;z-index:1;pointer-events:none;
+  background:
+    linear-gradient(to top,rgba(10,12,9,.97) 0%,rgba(10,12,9,.7) 30%,rgba(10,12,9,.15) 58%,transparent 80%),
+    linear-gradient(to right,rgba(10,12,9,.5) 0%,transparent 50%);
+}
+.ab-text{position:relative;z-index:2;padding:clamp(44px,6vw,110px) var(--pad);max-width:760px}
+.ab-kicker{font-size:8px;letter-spacing:.32em;text-transform:uppercase;color:var(--verd);margin-bottom:clamp(14px,2vw,32px);display:block}
+.ab-h{font-family:var(--serif);font-size:clamp(28px,4vw,68px);font-weight:300;line-height:1.08;color:var(--ink);margin-bottom:clamp(14px,2vw,32px);text-shadow:0 2px 20px rgba(10,12,9,.5)}
+.ab-h em{font-style:italic}
+.ab-body{font-size:clamp(12px,1.2vw,13px);line-height:1.95;color:rgba(237,232,224,.7);max-width:460px;margin-bottom:clamp(18px,2.5vw,40px)}
+.ab-body p+p{margin-top:12px}
+.ab-row{display:flex;align-items:center;gap:clamp(16px,2.5vw,48px);flex-wrap:wrap}
+.ab-num{display:flex;flex-direction:column;gap:2px}
+.ab-n{font-family:var(--serif);font-size:clamp(22px,2.8vw,46px);font-weight:300;color:var(--ink)}
+.ab-l{font-size:8px;letter-spacing:.18em;text-transform:uppercase;color:var(--mist)}
+.ab-sep{width:1px;height:34px;background:rgba(237,232,224,.1);flex-shrink:0}
+@media(max-width:480px){.ab-sep{display:none}}
+.ab-cta{display:inline-flex;align-items:center;gap:10px;font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--ink);padding-bottom:2px;border-bottom:1px solid rgba(237,232,224,.2);transition:border-color .22s;min-height:44px}
+.ab-cta:hover{border-color:var(--ink)}
+
+/* ══════════════════════════════════════════════════════════
+   KINETIC MARQUEE
+   ══════════════════════════════════════════════════════════ */
+#marquee-section{
+  position:relative;z-index:1;
+  border-top:1px solid rgba(237,232,224,.05);
+  padding:clamp(48px,8vw,130px) 0;
+  overflow:hidden;
+}
+.marquee-inner{display:flex;align-items:center;white-space:nowrap;will-change:transform}
+.marquee-word{
+  font-family:var(--serif);
+  font-size:clamp(72px,18vw,340px);
+  font-weight:300;line-height:.82;
+  letter-spacing:-.03em;
+  color:transparent;
+  -webkit-text-stroke:1px rgba(237,232,224,.18);
+  flex-shrink:0;padding:0 .18em;
+}
+.marquee-word.filled{color:var(--ink);-webkit-text-stroke:0px transparent;font-style:italic}
+.marquee-sub{position:absolute;bottom:clamp(16px,2.5vw,40px);right:var(--pad);font-size:8px;letter-spacing:.28em;text-transform:uppercase;color:var(--verd)}
+@media(max-width:480px){.marquee-sub{display:none}}
+
+/* ══════════════════════════════════════════════════════════
+   GALLERY
+   ══════════════════════════════════════════════════════════ */
+#gallery{position:relative;z-index:1;border-top:1px solid rgba(237,232,224,.05);padding-top:clamp(36px,5vw,72px)}
+.gal-head{padding:0 var(--pad) clamp(22px,3.5vw,48px);display:flex;justify-content:space-between;align-items:flex-end}
+.gal-h{font-family:var(--serif);font-size:clamp(36px,7.5vw,120px);font-weight:300;line-height:.88;letter-spacing:-.02em;color:var(--ink)}
+.gal-hint{font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:var(--mist);max-width:160px;text-align:right;line-height:1.7}
+@media(max-width:600px){.gal-hint{display:none}}
+.gal-viewport{width:100%;overflow:hidden;cursor:grab;padding-bottom:clamp(28px,4vw,56px)}
+.gal-viewport:active{cursor:grabbing}
+.gal-track{display:flex;gap:3px;padding:0 var(--pad);user-select:none;-webkit-user-select:none;will-change:transform;touch-action:pan-y}
+.gal-item{flex:0 0 clamp(220px,38vw,560px);position:relative;overflow:hidden}
+@media(max-width:480px){.gal-item{flex:0 0 78vw}}
+.gal-img{aspect-ratio:4/5;overflow:hidden;position:relative}
+.gal-img img{width:100%;height:100%;object-fit:cover;transition:transform .8s var(--exp);will-change:transform}
+.gal-item:hover .gal-img img{transform:scale(1.06)}
+.gal-caption{position:absolute;bottom:0;left:0;right:0;padding:clamp(12px,1.6vw,24px);background:linear-gradient(to top,rgba(10,12,9,.9) 0%,transparent 100%)}
+.gal-tag{font-size:8px;letter-spacing:.24em;text-transform:uppercase;color:var(--verd);margin-bottom:5px}
+.gal-name{font-family:var(--serif);font-size:clamp(16px,1.8vw,28px);font-weight:300;color:var(--ink)}
+.gal-bar{height:1px;background:rgba(237,232,224,.07);margin:0 var(--pad);position:relative;overflow:hidden}
+.gal-fill{position:absolute;top:0;left:0;height:100%;background:var(--verd);width:0%;will-change:width}
+
+/* ══════════════════════════════════════════════════════════
+   PAUSE — COLOR INVERSION
+   ══════════════════════════════════════════════════════════ */
+#pause{
+  position:relative;z-index:1;
+  background:var(--ink);
+  padding:clamp(64px,12vw,180px) var(--pad);
+  border-top:1px solid rgba(237,232,224,.05);
+}
+.pause-label{font-size:8px;letter-spacing:.32em;text-transform:uppercase;color:rgba(10,12,9,.35);margin-bottom:clamp(16px,2vw,36px);display:block}
+.pause-q{font-family:var(--serif);font-size:clamp(22px,4vw,68px);font-weight:300;font-style:italic;line-height:1.16;color:#0A0C09;max-width:900px}
+.pause-attr{margin-top:clamp(14px,1.8vw,32px);font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:rgba(10,12,9,.4)}
+
+/* ══════════════════════════════════════════════════════════
+   REVIEWS
+   ══════════════════════════════════════════════════════════ */
+#reviews{position:relative;z-index:1;padding:clamp(64px,10vw,152px) var(--pad);border-top:1px solid rgba(237,232,224,.05)}
+.rev-giant{display:flex;align-items:baseline;gap:clamp(10px,1.5vw,24px);margin-bottom:clamp(44px,7vw,112px);flex-wrap:wrap}
+.rev-num{font-family:var(--serif);font-size:clamp(56px,11vw,188px);font-weight:300;line-height:.82;color:var(--ink);letter-spacing:-.025em;font-variant-numeric:tabular-nums}
+.rev-detail{display:flex;flex-direction:column;gap:5px;padding-bottom:8px}
+.rev-stars{font-size:clamp(12px,1.6vw,22px);color:var(--verd);letter-spacing:3px}
+.rev-label{font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--mist)}
+.rev-block+.rev-block{margin-top:clamp(36px,5.5vw,88px);padding-top:clamp(36px,5.5vw,88px);border-top:1px solid rgba(237,232,224,.05)}
+.rev-mark{font-family:var(--serif);font-size:clamp(36px,6.5vw,110px);font-weight:300;color:var(--verd);line-height:.55;margin-bottom:clamp(8px,1.2vw,20px);display:block}
+.rev-text{font-family:var(--serif);font-size:clamp(17px,2.8vw,48px);font-weight:300;font-style:italic;line-height:1.22;color:var(--ink);max-width:1060px}
+.rev-auth{margin-top:clamp(12px,1.8vw,32px);font-size:9px;letter-spacing:.22em;text-transform:uppercase;color:var(--verd)}
+
+/* ══════════════════════════════════════════════════════════
+   INFO + PRESS AND HOLD
+   ══════════════════════════════════════════════════════════ */
+#info{
+  position:relative;z-index:1;
+  display:grid;grid-template-columns:1fr 1fr;
+  min-height:54vh;
+  border-top:1px solid rgba(237,232,224,.05);
+}
+@media(max-width:760px){
+  #info{grid-template-columns:1fr;min-height:auto}
+  .inf-price{border-right:none!important;border-bottom:1px solid rgba(237,232,224,.05)}
+}
+.inf-price{
+  padding:clamp(44px,7vw,116px) var(--pad);
+  display:flex;flex-direction:column;justify-content:space-between;gap:28px;
+  border-right:1px solid rgba(237,232,224,.05);
+}
+.inf-label{font-size:8px;letter-spacing:.32em;text-transform:uppercase;color:var(--verd);margin-bottom:clamp(10px,1.5vw,26px);display:block}
+.inf-pbig{font-family:var(--serif);font-size:clamp(60px,12vw,208px);font-weight:300;line-height:.82;letter-spacing:-.03em;color:var(--ink);display:block}
+.inf-psub{font-size:11px;color:var(--mist);margin-top:12px;line-height:1.85}
+
+/* Press-and-hold */
+.inf-hold-trigger{margin-top:clamp(22px,3vw,48px);cursor:pointer;user-select:none;-webkit-user-select:none;touch-action:none}
+.inf-hold-hint{font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--verd);display:flex;align-items:center;gap:10px;margin-bottom:14px;min-height:44px;align-items:center}
+.inf-hold-bar{height:1px;width:0;background:var(--verd);margin-bottom:20px}
+.inf-item{
+  display:flex;align-items:center;gap:11px;
+  font-size:12px;color:var(--mist);
+  margin-bottom:9px;
+  opacity:0;transform:translateX(-8px);
+  transition:opacity .4s var(--exp),transform .4s var(--exp);
+}
+.inf-item.shown{opacity:1;transform:none}
+.inf-tick{width:14px;height:1px;background:var(--verd);flex-shrink:0}
+
+.inf-contact{
+  padding:clamp(44px,7vw,116px) var(--pad);
+  display:flex;flex-direction:column;justify-content:space-between;gap:36px;
+}
+.inf-ch{font-family:var(--serif);font-size:clamp(22px,3.2vw,52px);font-weight:300;line-height:1.14;color:var(--ink)}
+.inf-ch em{font-style:italic}
+.inf-rows{display:flex;flex-direction:column;gap:clamp(16px,2vw,28px)}
+.inf-rl{font-size:8px;letter-spacing:.22em;text-transform:uppercase;color:var(--verd);margin-bottom:4px}
+.inf-rv{font-size:clamp(13px,1.2vw,16px);color:var(--ink);line-height:1.6}
+.inf-btn{
+  display:inline-flex;align-items:center;gap:11px;
+  font-size:10px;letter-spacing:.22em;text-transform:uppercase;
+  color:var(--ink);align-self:flex-start;
+  padding-bottom:2px;border-bottom:1px solid rgba(237,232,224,.16);
+  transition:border-color .22s;min-height:44px;
+}
+.inf-btn:hover{border-color:var(--ink)}
+.arr{display:inline-block;transition:transform .3s var(--exp)}
+.inf-btn:hover .arr,.ab-cta:hover .arr{transform:translateX(7px)}
+
+/* ── FOOTER ── */
+footer{
+  position:relative;z-index:1;
+  border-top:1px solid rgba(237,232,224,.05);
+  padding:clamp(20px,2.5vw,38px) var(--pad);
+  display:flex;justify-content:space-between;align-items:center;
+  flex-wrap:wrap;gap:14px;
+}
+.ft-logo{font-family:var(--serif);font-size:13px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--ink);opacity:.28}
+.ft-links{list-style:none;display:flex;gap:clamp(14px,2vw,22px);flex-wrap:wrap}
+.ft-links a{font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:var(--mist);transition:color .18s;min-height:44px;display:inline-flex;align-items:center}
+.ft-links a:hover{color:var(--ink)}
+.ft-addr{font-size:8px;color:rgba(237,232,224,.14);width:100%}
+
+/* ── GENERIC ENTRANCE ── */
+.reveal{opacity:0;transform:translateY(26px);transition:opacity .9s var(--exp),transform .9s var(--exp)}
+.reveal.in{opacity:1;transform:none}
+</style>
+</head>
+<body>
+
+<a class="skip" href="#main">Pular para o conteúdo</a>
+
+<!-- NAV -->
+<nav aria-label="Principal" id="mainNav">
+  <a href="#" class="nav-logo">Kawage</a>
+  <ul class="nav-links" id="navLinks">
+    <li><a href="#gallery" onclick="closeNav()">Cardápio</a></li>
+    <li><a href="#info" onclick="closeNav()">Visitar</a></li>
+    <li><a href="tel:+551141215276" onclick="closeNav()">(11) 4121-5276</a></li>
+  </ul>
+  <button class="nav-toggle" id="navToggle" aria-label="Abrir menu" aria-expanded="false">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+
+<main id="main" tabindex="-1">
+
+<!-- ══ HERO ══ -->
+<section id="hero-pin" aria-label="Kawage Sushi">
+  <div class="hero-stage" id="heroStage">
+
+    <div id="heroBgPhoto" aria-hidden="true">
+      <img
+        src="imagens/imgi_38_619607577_18300069337277716_2491331612711761126_n.jpg"
+        alt="" role="presentation" loading="eager" width="1920" height="1080"
+        id="heroBgImg" fetchpriority="high"
+      />
+    </div>
+
+    <div id="heroVideoWrap" aria-hidden="true">
+      <video
+        id="heroVideo"
+        src="video/hero.mp4"
+        preload="auto"
+        autoplay muted loop playsinline
+        aria-hidden="true"
+      ></video>
+    </div>
+
+    <div class="hero-grade" aria-hidden="true"></div>
+    <div class="hero-scrim-base" aria-hidden="true"></div>
+    <div class="hero-scrim-scroll" id="heroScrimScroll" aria-hidden="true"></div>
+
+    <div class="hero-cue" id="heroCue" aria-hidden="true">
+      <span class="hero-cue-label">scroll</span>
+      <div class="hero-cue-line"></div>
+    </div>
+
+    <div class="hero-title-group" id="heroTitleGroup">
+      <h1 class="hero-title" id="heroTitle">Kawage<br/><em>Sushi.</em></h1>
+      <div id="heroMeta" class="hero-meta">
+        <span class="hero-rating">4,5 ★</span>
+        <span class="hero-loc">2.851 avaliações · SBC</span>
+      </div>
+    </div>
+
+    <div class="hero-mid" id="heroMid" aria-hidden="true">
+      <span class="hero-mid-a">Cada prato é uma decisão.</span>
+      <span class="hero-mid-b">São Bernardo do Campo · Aberto todos os dias</span>
+    </div>
+
+  </div>
+</section>
+
+<!-- ══ STATEMENT ══ -->
+<section id="statement">
+  <span class="stmt-eye reveal">Kawage · Restaurante Japonês</span>
+  <span class="sig-rule" id="sigRule" aria-hidden="true"></span>
+  <blockquote class="stmt-q" id="stmtQ">
+    Cada prato chega como se fosse o único da noite.
+  </blockquote>
+  <p class="stmt-foot reveal">Rodízio completo · Bebida inclusa · Sobremesa inclusa</p>
+</section>
+
+<!-- ══ ABOUT ══ -->
+<section id="about" aria-label="Sobre o Kawage">
+  <div class="ab-bg" id="abBg" aria-hidden="true">
+    <img src="imagens/imgi_57_588573581_18294407122277716_8150479334565194585_n.jpg"
+      alt="" role="presentation" loading="lazy" width="1080" height="1350"/>
+  </div>
+  <div class="ab-vignette" aria-hidden="true"></div>
+  <div class="ab-text">
+    <span class="ab-kicker reveal">Sobre o restaurante</span>
+    <h2 class="ab-h" id="abH">Um jardim japonês<br/>que virou <em>mesa.</em></h2>
+    <div class="ab-body reveal">
+      <p>No Kawage o rodízio não é fila de pratos. Uma sequência com intenção. Cada peça chega com cuidado, com flor, com o tempo certo.</p>
+      <p>Bebida e sobremesa incluídas. Sem demora, sem falta. Aberto todos os dias a partir das 11h30.</p>
+    </div>
+    <div class="ab-row reveal">
+      <div class="ab-num"><span class="ab-n">4,5</span><span class="ab-l">Nota Google</span></div>
+      <div class="ab-sep" aria-hidden="true"></div>
+      <div class="ab-num"><span class="ab-n">2.851</span><span class="ab-l">Avaliações</span></div>
+      <div class="ab-sep" aria-hidden="true"></div>
+      <div class="ab-num"><span class="ab-n">11h30</span><span class="ab-l">Abertura</span></div>
+      <a href="tel:+551141215276" class="ab-cta">
+        (11) 4121-5276
+        <svg class="arr" width="18" height="7" viewBox="0 0 18 7" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="square" aria-hidden="true"><path d="M0 3.5h16M11.5 0l4.5 3.5-4.5 3.5"/></svg>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ══ KINETIC MARQUEE ══ -->
+<section id="marquee-section" aria-hidden="true">
+  <div class="marquee-inner" id="marqueeInner">
+    <span class="marquee-word">Kawage</span>
+    <span class="marquee-word filled">Sushi</span>
+    <span class="marquee-word">Kawage</span>
+    <span class="marquee-word filled">Sushi</span>
+    <span class="marquee-word">Kawage</span>
+  </div>
+  <span class="marquee-sub">São Bernardo do Campo · Desde sempre</span>
+</section>
+
+<!-- ══ GALLERY ══ -->
+<section id="gallery" aria-label="Fotos do cardápio">
+  <div class="gal-head">
+    <h2 class="gal-h" id="galH">O<br/>cardápio.</h2>
+    <p class="gal-hint">Arraste para ver.<br/>Sushis · Sashimis · Grelhados.</p>
+  </div>
+  <div class="gal-viewport" id="galViewport">
+    <div class="gal-track" id="galTrack" role="list">
+      <div class="gal-item" role="listitem">
+        <div class="gal-img"><img src="imagens/imgi_60_587717098_18294019744277716_8581033530914893997_n.jpg" alt="Combinado Kawage no stand dourado" loading="lazy"/></div>
+        <div class="gal-caption"><p class="gal-tag">Destaque</p><h3 class="gal-name">Combinado Kawage</h3></div>
+      </div>
+      <div class="gal-item" role="listitem">
+        <div class="gal-img"><img src="imagens/imgi_66_583360004_18293015869277716_1784423396365335521_n.jpg" alt="Mesa completa do rodízio" loading="lazy"/></div>
+        <div class="gal-caption"><p class="gal-tag">Mais pedido</p><h3 class="gal-name">Mesa do Rodízio</h3></div>
+      </div>
+      <div class="gal-item" role="listitem">
+        <div class="gal-img"><img src="imagens/imgi_21_639896517_18305285413277716_8153179554279221942_n.jpg" alt="Salmão grelhado na chapa de ferro" loading="lazy"/></div>
+        <div class="gal-caption"><p class="gal-tag">Grelhados</p><h3 class="gal-name">Salmão na Chapa</h3></div>
+      </div>
+      <div class="gal-item" role="listitem">
+        <div class="gal-img"><img src="imagens/imgi_34_625462119_18302170771277716_1473121197611380304_n.jpg" alt="Rolinho com flor laranja" loading="lazy"/></div>
+        <div class="gal-caption"><p class="gal-tag">Entrada</p><h3 class="gal-name">Rolinho com Flor</h3></div>
+      </div>
+      <div class="gal-item" role="listitem">
+        <div class="gal-img"><img src="imagens/imgi_57_588573581_18294407122277716_8150479334565194585_n.jpg" alt="Tábua de sashimi do chef" loading="lazy"/></div>
+        <div class="gal-caption"><p class="gal-tag">Sashimi</p><h3 class="gal-name">Tábua do Chef</h3></div>
+      </div>
+    </div>
+  </div>
+  <div class="gal-bar" aria-hidden="true"><div class="gal-fill" id="galFill"></div></div>
+</section>
+
+<!-- ══ PAUSE ══ -->
+<section id="pause" aria-label="Depoimento em destaque">
+  <span class="pause-label">Diz quem frequenta</span>
+  <blockquote class="pause-q" id="pauseQ">
+    Não há demora. Não há falta. Só a mesa, cheia, esperando você comer.
+  </blockquote>
+  <p class="pause-attr">Compilado de 2.851 avaliações · Google Maps</p>
+</section>
+
+<!-- ══ REVIEWS ══ -->
+<section id="reviews" aria-label="Avaliações">
+  <div class="rev-giant">
+    <span class="rev-num" id="revNum" aria-label="4 vírgula 5 estrelas">4,5</span>
+    <div class="rev-detail">
+      <span class="rev-stars" aria-hidden="true">★★★★★</span>
+      <span class="rev-label" id="revLabel">2.851 avaliações Google</span>
+    </div>
+  </div>
+  <div class="rev-block">
+    <span class="rev-mark" aria-hidden="true">"</span>
+    <p class="rev-text">O ambiente é maravilhoso. O Lázaro é um amor. Muito atencioso, não deixou nossa mesa vazia um segundo.</p>
+    <p class="rev-auth">Kathellen Vicente · Google Maps</p>
+  </div>
+  <div class="rev-block">
+    <span class="rev-mark" aria-hidden="true">"</span>
+    <p class="rev-text">Não há demora na entrega dos pratos. O valor inclui bebida e sobremesa. Voltarei sempre.</p>
+    <p class="rev-auth">Lucca LFD · Local Guide · Google Maps</p>
+  </div>
+  <div class="rev-block">
+    <span class="rev-mark" aria-hidden="true">"</span>
+    <p class="rev-text">Fomos muito bem atendidos. Ambiente bacana, comida excelente. Com certeza irei voltar.</p>
+    <p class="rev-auth">Maine! · Google Maps</p>
+  </div>
+</section>
+
+<!-- ══ INFO + PRESS-AND-HOLD ══ -->
+<section id="info" aria-label="Preços e localização">
+  <div class="inf-price">
+    <div>
+      <span class="inf-label">Valor por pessoa</span>
+      <span class="inf-pbig" id="priceBig">R$<br/>100</span>
+      <p class="inf-psub">a R$140 por pessoa</p>
+    </div>
+    <div class="inf-hold-trigger" id="holdTrigger"
+      role="button" tabindex="0"
+      aria-label="Pressione e segure para ver o que está incluído">
+      <div class="inf-hold-hint">
+        <span>Pressione e segure</span>
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1" opacity=".5" aria-hidden="true"><circle cx="7" cy="7" r="6"/><path d="M7 4v3l2 2"/></svg>
+      </div>
+      <div class="inf-hold-bar" id="holdBar"></div>
+      <div class="inf-item" data-i="0"><span class="inf-tick"></span>Rodízio completo de sushi e sashimi</div>
+      <div class="inf-item" data-i="1"><span class="inf-tick"></span>Grelhados de salmão e frutos do mar</div>
+      <div class="inf-item" data-i="2"><span class="inf-tick"></span>Bebida inclusa</div>
+      <div class="inf-item" data-i="3"><span class="inf-tick"></span>Sobremesa inclusa</div>
+      <div class="inf-item" data-i="4"><span class="inf-tick"></span>Retirada e entrega disponíveis</div>
+    </div>
+  </div>
+  <div class="inf-contact">
+    <h2 class="inf-ch" id="infH">A mesa<br/>está <em>pronta.</em></h2>
+    <div class="inf-rows">
+      <div><p class="inf-rl">Telefone</p><p class="inf-rv">(11) 4121-5276</p></div>
+      <div><p class="inf-rl">Endereço</p><p class="inf-rv">R. Continental, 372<br/>Jardim do Mar · São Bernardo do Campo</p></div>
+      <div><p class="inf-rl">Horário</p><p class="inf-rv">Todos os dias a partir das 11h30</p></div>
+    </div>
+    <a href="tel:+551141215276" class="inf-btn">
+      Ligar e reservar
+      <svg class="arr" width="18" height="7" viewBox="0 0 18 7" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="square" aria-hidden="true"><path d="M0 3.5h16M11.5 0l4.5 3.5-4.5 3.5"/></svg>
+    </a>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <div class="ft-logo">Kawage Sushi</div>
+  <ul class="ft-links">
+    <li><a href="#gallery">Cardápio</a></li>
+    <li><a href="#reviews">Avaliações</a></li>
+    <li><a href="tel:+551141215276">Ligar</a></li>
+    <li><a href="https://maps.google.com/?q=Kawage+Sushi,São+Bernardo+do+Campo" target="_blank" rel="noopener noreferrer">Mapa ↗</a></li>
+  </ul>
+  <p class="ft-addr">R. Continental, 372 · Jardim do Mar · São Bernardo do Campo – SP · 09750-060</p>
+</footer>
+
+<script>
+(function(){'use strict';
+var clamp=function(v,lo,hi){return Math.min(hi,Math.max(lo,v))};
+var lerp=function(a,b,t){return a+(b-a)*t};
+
+/* ── TAB VISIBILITY ── */
+document.addEventListener('visibilitychange',function(){
+  document.body.classList.toggle('paused',document.hidden);
+});
+
+/* ── MOBILE NAV ── */
+var navToggle=document.getElementById('navToggle');
+var mainNav=document.getElementById('mainNav');
+function closeNav(){mainNav.classList.remove('nav-open');navToggle.setAttribute('aria-expanded','false');}
+navToggle.addEventListener('click',function(){
+  var open=mainNav.classList.toggle('nav-open');
+  navToggle.setAttribute('aria-expanded',open?'true':'false');
+});
+document.addEventListener('keydown',function(e){if(e.key==='Escape') closeNav();});
+
+/* ══ HERO — AUTOPLAY VIDEO + SCROLL COMPOSITION ══ */
+var heroPin   = document.getElementById('hero-pin');
+var heroStage = document.getElementById('heroStage');
+var heroVideo = document.getElementById('heroVideo');
+var heroVWrap = document.getElementById('heroVideoWrap');
+var heroBgImg = document.getElementById('heroBgImg');
+var titleGrp  = document.getElementById('heroTitleGroup');
+var heroMid   = document.getElementById('heroMid');
+var scrimEl   = document.getElementById('heroScrimScroll');
+var heroCue   = document.getElementById('heroCue');
+var lastP     = -1;
+
+function onVideoCanPlay(){
+  heroVideo.classList.add('ready');
+  heroStage.classList.add('video-ready');
+}
+heroVideo.addEventListener('canplay',  onVideoCanPlay,{once:true});
+heroVideo.addEventListener('playing',  onVideoCanPlay,{once:true});
+if(heroVideo.readyState>=3) onVideoCanPlay();
+heroVideo.play().catch(function(){});
+
+function getHeroProgress(){
+  var rect=heroPin.getBoundingClientRect();
+  var travel=heroPin.offsetHeight-window.innerHeight;
+  if(travel<=0) return 0;
+  return clamp(-rect.top/travel,0,1);
+}
+
+function updateHero(){
+  var p=getHeroProgress();
+  if(Math.abs(p-lastP)<0.0002) return;
+  lastP=p;
+  heroVWrap.style.transform='scale('+lerp(1,1.08,p)+')';
+  heroVWrap.style.opacity=String(clamp(1-(p-0.65)/0.25,0.15,1));
+  if(heroBgImg) heroBgImg.style.transform='translateY('+lerp(4,-4,p)+'%)';
+  var tOp=clamp(1-p/0.42,0,1);
+  titleGrp.style.opacity=String(tOp);
+  titleGrp.style.transform='translateY('+(-p*52)+'px)';
+  var mIn=clamp((p-0.30)/0.18,0,1);
+  var mOut=clamp((p-0.57)/0.18,0,1);
+  heroMid.style.opacity=String(mIn*(1-mOut));
+  heroMid.style.transform='translateY(calc(-50% + '+lerp(22,-22,clamp(p/0.76,0,1))+'px))';
+  scrimEl.style.background='rgba(10,12,9,'+clamp(p*0.62,0,0.55)+')';
+  if(heroCue) heroCue.style.opacity=String(clamp(1-p/0.20,0,1));
+}
+window.addEventListener('scroll',updateHero,{passive:true});
+var heroRaf=null;
+new IntersectionObserver(function(entries){
+  if(entries[0].isIntersecting){(function loop(){heroRaf=requestAnimationFrame(function(){updateHero();loop();});})();}
+  else{cancelAnimationFrame(heroRaf);heroRaf=null;}
+},{rootMargin:'100px'}).observe(heroPin);
+
+/* ══ ABOUT PARALLAX ══ */
+var abBgEl=document.querySelector('.ab-bg img');
+var abSec=document.getElementById('about');
+function updateAbout(){
+  if(!abBgEl) return;
+  var r=abSec.getBoundingClientRect(),vh=window.innerHeight;
+  abBgEl.style.transform='translateY('+lerp(-6,6,clamp((vh-r.top)/(vh+r.height),0,1))+'%)';
+}
+window.addEventListener('scroll',updateAbout,{passive:true});
+updateAbout();
+
+/* ══ KINETIC MARQUEE ══ */
+var marqSec=document.getElementById('marquee-section');
+var marqInner=document.getElementById('marqueeInner');
+function updateMarquee(){
+  if(!marqSec) return;
+  var r=marqSec.getBoundingClientRect(),vh=window.innerHeight;
+  marqInner.style.transform='translateX('+lerp(-28,28,clamp((vh-r.top)/(vh+r.height),0,1))+'vw)';
+}
+window.addEventListener('scroll',updateMarquee,{passive:true});
+updateMarquee();
+
+/* ══ SPLIT TEXT ══ */
+function splitWords(el){
+  var walker=document.createTreeWalker(el,NodeFilter.SHOW_TEXT);
+  var nodes=[],n;while((n=walker.nextNode()))nodes.push(n);
+  nodes.forEach(function(node){
+    var parts=node.textContent.split(/(s+)/);
+    var frag=document.createDocumentFragment();
+    parts.forEach(function(p){
+      if(/^s+$/.test(p)){frag.appendChild(document.createTextNode(p));}
+      else if(p){var sw=document.createElement('span');sw.className='sw';var swi=document.createElement('span');swi.className='swi';swi.textContent=p;sw.appendChild(swi);frag.appendChild(sw);}
+    });
+    node.parentNode.replaceChild(frag,node);
+  });
+  return el.querySelectorAll('.swi');
+}
+function revealWords(inners,delay){
+  delay=delay||0;
+  Array.from(inners).forEach(function(w,i){
+    w.style.transitionProperty='transform';
+    w.style.transitionDuration='1.1s';
+    w.style.transitionTimingFunction='cubic-bezier(0.16,1,0.3,1)';
+    w.style.transitionDelay=(delay+i*0.06)+'s';
+    w.style.transform='translateY(0%)';
+  });
+}
+/* Hero entrance */
+var hTitleInners=splitWords(document.getElementById('heroTitle'));
+var heroMeta=document.getElementById('heroMeta');
+if(heroMeta){heroMeta.style.opacity='0';heroMeta.style.transform='translateY(12px)';}
+function heroEntrance(){
+  revealWords(hTitleInners,0);
+  if(heroMeta){
+    setTimeout(function(){
+      heroMeta.style.transition='opacity .8s cubic-bezier(0.16,1,0.3,1),transform .8s cubic-bezier(0.16,1,0.3,1)';
+      heroMeta.style.opacity='1';heroMeta.style.transform='none';
+    },500);
+  }
+}
+if(document.readyState==='complete') setTimeout(heroEntrance,80);
+else window.addEventListener('load',function(){setTimeout(heroEntrance,80);});
+
+/* ══ INTERSECTION OBSERVERS ══ */
+var io=new IntersectionObserver(function(entries){
+  entries.forEach(function(e){
+    if(!e.isIntersecting) return;
+    var el=e.target,type=el._rtype;
+    if(type==='words') revealWords(el._inners,0);
+    else if(type==='sig') el.classList.add('drawn');
+    else if(type==='count') animateCounter(el);
+    else el.classList.add('in');
+    io.unobserve(el);
+  });
+},{rootMargin:'0px 0px -10% 0px',threshold:0.01});
+function watch(el,type,inners){if(!el)return;el._rtype=type;if(inners)el._inners=inners;io.observe(el);}
+
+watch(document.getElementById('sigRule'),'sig');
+var stmtQ=document.getElementById('stmtQ');watch(stmtQ,'words',splitWords(stmtQ));
+var abH=document.getElementById('abH');watch(abH,'words',splitWords(abH));
+var galH=document.getElementById('galH');watch(galH,'words',splitWords(galH));
+var infH=document.getElementById('infH');watch(infH,'words',splitWords(infH));
+watch(document.getElementById('priceBig'),'words',splitWords(document.getElementById('priceBig')));
+var pauseQ=document.getElementById('pauseQ');watch(pauseQ,'words',splitWords(pauseQ));
+watch(document.getElementById('revNum'),'count');
+document.querySelectorAll('.reveal').forEach(function(el){watch(el,'generic');});
+
+/* Pause section */
+var pauseSec=document.getElementById('pause');
+if(pauseSec){
+  pauseSec.style.opacity='0';pauseSec.style.transform='translateY(20px)';
+  var pIO=new IntersectionObserver(function(ent){
+    if(!ent[0].isIntersecting)return;
+    pauseSec.style.transition='opacity 1s cubic-bezier(0.16,1,0.3,1),transform 1s cubic-bezier(0.16,1,0.3,1)';
+    pauseSec.style.opacity='1';pauseSec.style.transform='none';pIO.disconnect();
+  },{threshold:0.05});
+  pIO.observe(pauseSec);
+}
+document.querySelectorAll('.gal-item').forEach(function(el,i){
+  el.style.opacity='0';el.style.transform='translateY(28px)';
+  var gio=new IntersectionObserver(function(ent){
+    if(!ent[0].isIntersecting)return;
+    el.style.transition='opacity .9s cubic-bezier(0.16,1,0.3,1) '+(i*.07)+'s,transform .9s cubic-bezier(0.16,1,0.3,1) '+(i*.07)+'s';
+    el.style.opacity='1';el.style.transform='none';gio.disconnect();
+  },{rootMargin:'0px 0px -8% 0px',threshold:0.01});
+  gio.observe(el);
+});
+document.querySelectorAll('.rev-block').forEach(function(el){
+  el.style.opacity='0';el.style.transform='translateY(22px)';
+  var rio=new IntersectionObserver(function(ent){
+    if(!ent[0].isIntersecting)return;
+    el.style.transition='opacity .9s cubic-bezier(0.16,1,0.3,1),transform .9s cubic-bezier(0.16,1,0.3,1)';
+    el.style.opacity='1';el.style.transform='none';rio.disconnect();
+  },{rootMargin:'0px 0px -5% 0px',threshold:0.01});
+  rio.observe(el);
+});
+
+/* ══ COUNTER ══ */
+function animateCounter(el){
+  var label=document.getElementById('revLabel');
+  var start=null,DUR=2200,TARGET=2851;
+  (function step(ts){
+    if(!start) start=ts;
+    var prog=Math.min(1,(ts-start)/DUR);
+    var eased=1-Math.pow(1-prog,3);
+    var val=Math.round(eased*TARGET);
+    el.textContent=val.toLocaleString('pt-BR');
+    if(label) label.textContent=val.toLocaleString('pt-BR')+' avaliações Google';
+    if(prog<1){requestAnimationFrame(step);}
+    else{setTimeout(function(){
+      el.style.transition='opacity .5s';el.style.opacity='0';
+      setTimeout(function(){el.textContent='4,5';el.style.opacity='1';if(label)label.textContent='2.851 avaliações Google';},500);
+    },900);}
+  })(performance.now());
+}
+
+/* ══ GALLERY — VIRTUAL SCROLL ══ */
+var viewport=document.getElementById('galViewport');
+var track=document.getElementById('galTrack');
+var fill=document.getElementById('galFill');
+var galX=0,galTarget=0,galMax=0,galRAF=null,galLastT=0;
+function galMax_c(){galMax=Math.max(0,track.scrollWidth-viewport.clientWidth);}
+function galSetProg(x){if(galMax>0)fill.style.width=(x/galMax*100)+'%';}
+function galLoop(now){
+  var dt=Math.min(80,now-(galLastT||now));galLastT=now;
+  var f=1-Math.pow(1-0.10,dt/16.667);
+  galX=lerp(galX,galTarget,f);
+  if(Math.abs(galX-galTarget)<0.15){galX=galTarget;track.style.transform='translateX(-'+galX+'px)';galSetProg(galX);galRAF=null;return;}
+  track.style.transform='translateX(-'+galX+'px)';galSetProg(galX);
+  galRAF=requestAnimationFrame(galLoop);
+}
+function galWake(){if(!galRAF)galRAF=requestAnimationFrame(galLoop);}
+function galSet(x){galTarget=clamp(x,0,galMax);galWake();}
+viewport.addEventListener('wheel',function(e){
+  if(Math.abs(e.deltaX)>Math.abs(e.deltaY))return;
+  if(galMax<=0)return;
+  if(galTarget<=0&&e.deltaY<0)return;
+  if(galTarget>=galMax&&e.deltaY>0)return;
+  e.preventDefault();galSet(galTarget+e.deltaY*1.4);
+},{passive:false});
+var dr={on:false,sx:0,sv:0,vx:0,lx:0,lt:0};
+viewport.addEventListener('mousedown',function(e){dr.on=true;dr.sx=e.clientX;dr.sv=galTarget;dr.vx=0;dr.lx=e.clientX;dr.lt=Date.now();if(galRAF){cancelAnimationFrame(galRAF);galRAF=null;}galX=galTarget;});
+window.addEventListener('mousemove',function(e){if(!dr.on)return;var now=Date.now(),dt2=Math.max(1,now-dr.lt);dr.vx=(dr.lx-e.clientX)/dt2*16;dr.lx=e.clientX;dr.lt=now;galSet(dr.sv+(dr.sx-e.clientX));});
+window.addEventListener('mouseup',function(){if(!dr.on)return;dr.on=false;var vel=dr.vx;(function m(){vel*=0.90;galSet(galTarget+vel);if(Math.abs(vel)>0.6)requestAnimationFrame(m);})();});
+var tc={sx:0,sv:0};
+viewport.addEventListener('touchstart',function(e){tc.sx=e.touches[0].clientX;tc.sv=galTarget;if(galRAF){cancelAnimationFrame(galRAF);galRAF=null;}galX=galTarget;},{passive:true});
+viewport.addEventListener('touchmove',function(e){galSet(tc.sv+(tc.sx-e.touches[0].clientX));},{passive:true});
+function galInit(){galMax_c();}
+window.addEventListener('resize',galInit,{passive:true});
+if(document.readyState==='complete')galInit();
+else window.addEventListener('load',galInit);
+
+/* ══ PRESS AND HOLD ══ */
+var holdTrigger=document.getElementById('holdTrigger');
+var holdBar=document.getElementById('holdBar');
+var holdItems=Array.from(document.querySelectorAll('.inf-item'));
+var HOLD_DUR=1800,holding=false,holdStart=0,holdRAF=null,holdComplete=false;
+function startHold(e){
+  if(holdComplete)return;
+  holding=true;holdStart=Date.now();holdBar.style.transition='none';
+  advanceHold();e.preventDefault();
+}
+function advanceHold(){
+  if(!holding)return;
+  var elapsed=Date.now()-holdStart;
+  var p=Math.min(1,elapsed/HOLD_DUR);
+  holdBar.style.width=(p*100)+'%';
+  var count=Math.ceil(p*holdItems.length);
+  holdItems.forEach(function(item,i){if(i<count)item.classList.add('shown');});
+  if(p>=1){holdComplete=true;holding=false;holdBar.style.transition='width .3s';holdBar.style.width='100%';return;}
+  holdRAF=requestAnimationFrame(advanceHold);
+}
+function endHold(){
+  if(!holding)return;holding=false;cancelAnimationFrame(holdRAF);
+  if(!holdComplete){holdBar.style.transition='width .5s cubic-bezier(0.16,1,0.3,1)';holdBar.style.width='0%';holdItems.forEach(function(item){item.classList.remove('shown');});}
+}
+holdTrigger.addEventListener('mousedown',startHold);
+holdTrigger.addEventListener('touchstart',startHold,{passive:false});
+window.addEventListener('mouseup',endHold);
+window.addEventListener('touchend',endHold);
+holdTrigger.addEventListener('keydown',function(e){if(e.key===' '||e.key==='Enter')startHold(e);});
+holdTrigger.addEventListener('keyup',function(e){if(e.key===' '||e.key==='Enter')endHold();});
+
+})();
+</script>
+</body>
+</html>

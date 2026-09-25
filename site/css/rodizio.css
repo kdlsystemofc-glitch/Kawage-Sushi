@@ -1,0 +1,82 @@
+/* 04 · Rodízio + shimeji + nota (referência: design/secoes/04-rodizio-shimeji-nota.png).
+   Coordenadas em --u a partir do topo da seção (y do mockup − 905). A pedra vem do .escuro.
+   A seção vai até y 1235 do mockup (e não 1214) para a ponta da fita afinar dentro da pedra,
+   antes da seção Visite (creme). */
+
+.rodizio {
+  position: relative; /* sem z-index: não cria contexto */
+  height: calc(var(--u) * 330);
+}
+
+.rodizio__texto {
+  position: absolute;
+  z-index: var(--z-texto);
+  left: calc(var(--u) * 150);
+  top: calc(var(--u) * 84);
+  width: calc(var(--u) * 200);
+  display: grid;
+  justify-items: start;
+  gap: calc(var(--u) * 10);
+}
+.rodizio__titulo {
+  font-family: var(--fonte-titulo);
+  font-weight: 500;
+  font-size: calc(var(--u) * 28.5);
+  letter-spacing: var(--ls-titulo);
+  line-height: var(--lh-titulo);
+  text-transform: uppercase;
+  color: var(--creme);
+}
+.rodizio__titulo span { display: block; }
+.rodizio__corpo {
+  color: var(--apoio-escuro);
+  font-size: max(14px, calc(var(--u) * 9.6));
+  line-height: 1.5;
+  max-width: 30ch;
+}
+
+/* Pílula da nota: valor em creme cheio, total em contorno (como no mockup). */
+.nota {
+  display: inline-flex;
+  align-items: stretch;
+  margin-top: calc(var(--u) * 4);
+  border: 1px solid rgb(237 231 219 / 0.4);
+  border-radius: var(--raio-pilula);
+  font-family: var(--fonte-apoio);
+  font-size: max(12px, calc(var(--u) * 8));
+  line-height: 1;
+  white-space: nowrap;
+}
+.nota__valor {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3em;
+  padding: 0.55em 0.8em;
+  border-radius: var(--raio-pilula);
+  background: var(--creme);
+  color: var(--tinta);
+  font-weight: 600;
+}
+.nota__total {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.55em 0.95em 0.55em 0.7em;
+  color: var(--creme);
+}
+
+.rodizio__foto {
+  position: absolute;
+  z-index: var(--z-sobre);
+  left: calc(var(--u) * 390);
+  top: calc(var(--u) * 40);
+  width: calc(var(--u) * 182);
+  filter: var(--sombra-objeto);
+}
+
+/* ── celular: texto → shimeji (D21) ── */
+@media (max-width: 47.99rem) {
+  .rodizio { height: calc(var(--u) * 560); }
+  .rodizio__texto { left: calc(var(--u) * 24); top: calc(var(--u) * 40); width: calc(var(--u) * 290); }
+  .rodizio__titulo { font-size: calc(var(--u) * 38); }
+  .rodizio__foto { left: calc(var(--u) * 120); top: calc(var(--u) * 232); width: calc(var(--u) * 232); }
+}

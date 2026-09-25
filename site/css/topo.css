@@ -1,0 +1,87 @@
+/* 01 · Topo (referência: design/secoes/01-topo-wordmark.png). Medidas em --u (px do mockup de 768). */
+
+/* ── cabeçalho: logo real à esquerda (no mockup, ícones sociais inventados), pílula MENU à direita ── */
+.cabecalho {
+  position: absolute;
+  inset: 0 0 auto;
+  z-index: var(--z-cabecalho);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: calc(var(--u) * 9) calc(var(--u) * 11) 0 calc(var(--u) * 12);
+  max-width: var(--palco);
+  margin-inline: auto;
+}
+.cabecalho__logo {
+  display: block;
+  width: min(calc(var(--u) * 42), 75px); /* 150 px nativos: até 75 px CSS não pixeliza em tela 2× */
+  min-width: var(--toque);
+}
+.cabecalho__logo img { width: 100%; }
+
+.pilula {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55em;
+  min-height: calc(var(--u) * 23);
+  padding: 0.35em 0.95em 0.35em 1.05em;
+  border-radius: var(--raio-pilula);
+  background: var(--tinta);
+  color: var(--creme);
+  font-family: var(--fonte-apoio);
+  font-weight: 500;
+  font-size: max(11px, calc(var(--u) * 8.2));
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  line-height: 1;
+}
+.pilula svg { width: 1.15em; height: 1.15em; }
+/* alvo de toque de 44 px sem mudar o desenho da pílula */
+.pilula::before { content: ""; position: absolute; inset: min(0px, calc((100% - var(--toque)) / 2)) -4px; }
+.pilula:hover { background: var(--laca); }
+
+.menu {
+  position: absolute;
+  top: calc(100% + var(--esp-1));
+  right: calc(var(--u) * 11);
+  padding: var(--esp-2) var(--esp-3);
+  background: var(--tinta);
+  color: var(--creme);
+  border-radius: 12px;
+}
+.menu a { display: block; padding-block: var(--esp-1); text-decoration: none; }
+
+/* ── seção ── */
+.topo {
+  position: relative;
+  height: calc(var(--u) * 167);
+  background: var(--creme);
+}
+
+/* Wordmark tipográfico (DESIGN.md §3.2: título, nunca logo). Caixa aparada na altura das
+   maiúsculas: top = topo das letras, height = altura das maiúsculas (83 u no mockup). */
+.topo__wordmark {
+  position: absolute;
+  z-index: var(--z-atras);
+  inset-inline: 0;
+  top: calc(var(--u) * 62);
+  font-family: var(--fonte-titulo);
+  font-weight: 500;
+  font-size: calc(var(--u) * 121);
+  letter-spacing: var(--ls-wordmark);
+  line-height: 1;
+  text-box: trim-both cap alphabetic;
+  text-transform: uppercase;
+  text-align: center;
+  color: var(--tinta);
+  white-space: nowrap;
+}
+
+@media (max-width: 47.99rem) {
+  .cabecalho { padding: calc(var(--u) * 12) calc(var(--u) * 14) 0; }
+  .cabecalho__logo { width: calc(var(--u) * 44); }
+  .pilula { min-height: calc(var(--u) * 30); font-size: 12px; }
+  .topo { height: calc(var(--u) * 170); }
+  .topo__wordmark { top: calc(var(--u) * 92); font-size: calc(var(--u) * 67); }
+}

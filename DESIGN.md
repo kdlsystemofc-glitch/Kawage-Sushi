@@ -94,7 +94,7 @@ mais quentes e "caseiros" que o mockup. **Isso é desejável** (é o que o clien
 
 | Texto do mockup | Texto do site | Status |
 |---|---|---|
-| `SUBHEBAIN` (sobretítulo) | "Rodízio e cardápio japonês · Jardim do Mar, São Bernardo do Campo" | Real (ficha do Google + endereço) |
+| `SUBHEBAIN` (sobretítulo) | "Rodízio e cardápio japonês" | Real (ficha do Google). *Ajuste de 25/09:* o bairro saiu do sobretítulo porque, em texto legível, ocupava 3 linhas e empurrava o texto para baixo da fita; o endereço fica no `<h1>` (texto oculto), no `<title>` e na seção Visite |
 | `A MESA PEDE MAIS UM` | "A mesa pede mais um" | ✅ **Texto autoral** (título de marketing). **Não é slogan oficial do cliente** e não deve ser apresentado como tal (sem ™, sem "nosso lema"). Não afirma fato: pode ficar enquanto não contradisser nenhum dado real |
 | Lorem sob o título | "Sushis, sashimis e grelhados de salmão, no rodízio ou no cardápio. Para comer aqui, retirar na porta ou receber em casa." | Real (descrição do Google + serviços). **Sem "em rede"** (D10) |
 | `TERIYAKI SALMON` | "Da chapa" (sobretítulo) + "Grelhados de salmão" | Real ("grelhados de salmão" está na descrição do Google) |

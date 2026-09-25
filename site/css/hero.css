@@ -1,0 +1,83 @@
+/* 02 · Hero "A mesa pede mais um" (referência: design/secoes/02-hero-mesa-pede-mais-um.png).
+   Coordenadas em --u a partir do topo da seção (y do mockup − 167). */
+
+.hero {
+  position: relative; /* sem z-index: não cria contexto */
+  height: calc(var(--u) * 459);
+}
+/* Ilha creme: do canto esquerdo da tela até 385 u; a fita passa na frente da borda direita. */
+.hero__ilha {
+  position: absolute;
+  z-index: var(--z-atras);
+  top: calc(var(--u) * 194);
+  height: calc(var(--u) * 253);
+  left: calc(50% - 50vw);
+  right: calc(100% - var(--u) * 385);
+  background: var(--creme);
+}
+
+.hero__texto {
+  position: absolute;
+  z-index: var(--z-texto);
+  top: calc(var(--u) * 194);
+  height: calc(var(--u) * 253);
+  left: calc(var(--u) * 148);
+  width: calc(var(--u) * 224);
+  padding-bottom: calc(var(--u) * 28);
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end; /* o texto fica embaixo da foto A, como no mockup */
+  gap: calc(var(--u) * 10);
+}
+.sobre {
+  display: grid;
+  font-family: var(--fonte-apoio);
+  font-weight: 500;
+  font-size: max(10.5px, calc(var(--u) * 7.2));
+  letter-spacing: var(--ls-sobre);
+  line-height: 1.5;
+  text-transform: uppercase;
+  color: var(--tinta-suave);
+}
+.hero__titulo {
+  font-family: var(--fonte-titulo);
+  font-weight: 500;
+  font-size: calc(var(--u) * 28.5);
+  letter-spacing: var(--ls-titulo);
+  line-height: var(--lh-titulo);
+  text-transform: uppercase;
+  color: var(--tinta);
+}
+.hero__titulo span { display: block; }
+.hero__corpo {
+  color: var(--tinta-suave);
+  font-size: max(14px, calc(var(--u) * 9.6));
+  line-height: 1.5;
+  max-width: 30ch; /* não invade a borda da ilha, por onde passa a fita */
+}
+
+/* Fotos reais recortadas: posição independente da fita, por cima dela (DESIGN.md §4.3). */
+.hero__foto {
+  position: absolute;
+  z-index: var(--z-sobre);
+  filter: var(--sombra-objeto);
+}
+.hero__foto--a { left: calc(var(--u) * 294); top: calc(var(--u) * 28); width: calc(var(--u) * 206); }
+.hero__foto--b { left: calc(var(--u) * 386); top: calc(var(--u) * 300); width: calc(var(--u) * 226); }
+
+/* ── celular: empilhado na ordem de leitura do mockup (D21): foto A → título → foto B ── */
+@media (max-width: 47.99rem) {
+  .hero { height: calc(var(--u) * 760); }
+  .hero__ilha { top: calc(var(--u) * 262); height: calc(var(--u) * 282); right: calc(100% - var(--u) * 340); }
+  .hero__texto {
+    top: calc(var(--u) * 262);
+    height: calc(var(--u) * 282);
+    left: calc(var(--u) * 24);
+    width: calc(var(--u) * 270);
+    padding-bottom: calc(var(--u) * 26);
+    gap: calc(var(--u) * 12);
+  }
+  .hero__titulo { font-size: calc(var(--u) * 38); }
+  .hero__foto--a { left: calc(var(--u) * 122); top: calc(var(--u) * 26); width: calc(var(--u) * 246); }
+  .hero__foto--b { left: calc(var(--u) * 96); top: calc(var(--u) * 530); width: calc(var(--u) * 280); }
+}

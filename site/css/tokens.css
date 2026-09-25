@@ -1,0 +1,89 @@
+/* Tokens — única fonte de cores, fontes, espaçamentos e camadas (DESIGN.md §3, §4.6, §7). */
+
+@font-face {
+  font-family: "Cormorant Garamond";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("../assets/fonts/cormorant-garamond-latin-400-normal.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Cormorant Garamond";
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url("../assets/fonts/cormorant-garamond-latin-500-normal.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Cormorant Garamond";
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url("../assets/fonts/cormorant-garamond-latin-600-normal.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Instrument Sans";
+  font-style: normal;
+  font-weight: 400 700;
+  font-display: swap;
+  src: url("../assets/fonts/instrument-sans-latin-wght-normal.woff2") format("woff2");
+}
+
+:root {
+  /* ── cor (amostrada do mockup, DESIGN.md §3.1) ── */
+  --creme: #EDE7DB;
+  --creme-luz: #F4EFE6;
+  --tinta: #141312;
+  --tinta-suave: #4A4640;
+  --pedra: #0A0B0C;
+  --pedra-veio: #16171A;
+  --apoio-escuro: #AAABA5;
+  --laca: #8A0A10;
+  --laca-sombra: #4A080C;
+  --laca-funda: #220103;
+  --laca-brilho: #C0605A;
+
+  /* ── tipografia (DESIGN.md §3.2) ── */
+  --fonte-titulo: "Cormorant Garamond", "Cormorant", Garamond, "Times New Roman", serif;
+  --fonte-apoio: "Instrument Sans", "Segoe UI", system-ui, sans-serif;
+  --ls-sobre: 0.14em;
+  --ls-titulo: 0.02em;
+  --ls-wordmark: -0.01em;
+  --lh-titulo: 1.04;
+  --lh-corpo: 1.55;
+
+  /* ── palco e unidade de proporção (DESIGN.md §7) ──
+     --u = 1px do mockup de 768 px. Tudo na composição é medido em --u, então o desktop
+     é o mockup escalado (teto do palco: 1280 px, D18). Abaixo de 768 px, --u = 1px de uma tela de 390. */
+  --palco-max: 1280px;
+  --palco: min(100vw, var(--palco-max));
+  --u: calc(var(--palco) / 768);
+  --margem: clamp(6px, 0.92vw, 16px); /* moldura creme em volta da pedra (7 px em 768) */
+
+  /* ── camadas (DESIGN.md §4.6) ── */
+  --z-atras: 1;
+  --z-fita: 2;
+  --z-sobre: 3;
+  --z-texto: 4;
+  --z-cabecalho: 10;
+
+  /* ── sombra de contato das fotos recortadas (única sombra do projeto, §4.4) ── */
+  --sombra-objeto:
+    drop-shadow(0 calc(var(--u) * 3) calc(var(--u) * 3) rgb(10 11 12 / 0.55))
+    drop-shadow(0 calc(var(--u) * 18) calc(var(--u) * 22) rgb(10 11 12 / 0.45));
+
+  /* ── espaçamento ── */
+  --esp-1: clamp(0.375rem, 0.3rem + 0.3vw, 0.5rem);
+  --esp-2: clamp(0.625rem, 0.5rem + 0.5vw, 1rem);
+  --esp-3: clamp(1rem, 0.8rem + 0.8vw, 1.5rem);
+  --esp-4: clamp(1.5rem, 1.1rem + 1.6vw, 2.5rem);
+  --toque: 44px;
+  --raio-pilula: 999px;
+}
+
+@media (max-width: 47.99rem) {
+  :root {
+    --palco: 100vw;
+    --u: calc(100vw / 390); /* no celular a unidade é 1px de uma tela de 390 */
+  }
+}

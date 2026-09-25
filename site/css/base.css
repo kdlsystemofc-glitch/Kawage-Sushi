@@ -70,9 +70,10 @@ body {
   position: relative; /* sem z-index: não cria contexto */
   --pedra-textura:
     radial-gradient(120% 80% at 70% 30%, transparent 0 40%, rgb(4 5 6 / 0.55) 100%),
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1600 1000' preserveAspectRatio='xMidYMid slice'%3E%3Cfilter id='p' x='0' y='0' width='100%25' height='100%25'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.0036 0.014' numOctaves='7' seed='23'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3CfeDiffuseLighting lighting-color='%232A2928' surfaceScale='15' diffuseConstant='1'%3E%3CfeDistantLight azimuth='210' elevation='16'/%3E%3C/feDiffuseLighting%3E%3C/filter%3E%3Cg transform='rotate(-24 800 500)'%3E%3Crect x='-500' y='-700' width='2600' height='2400' filter='url(%23p)'/%3E%3C/g%3E%3C/svg%3E");
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1600 2400' preserveAspectRatio='xMidYMin slice'%3E%3Cfilter id='p' x='0' y='0' width='100%25' height='100%25'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.0036 0.014' numOctaves='7' seed='23'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3CfeDiffuseLighting lighting-color='%232A2928' surfaceScale='15' diffuseConstant='1'%3E%3CfeDistantLight azimuth='210' elevation='16'/%3E%3C/feDiffuseLighting%3E%3C/filter%3E%3Cg transform='rotate(-24 800 1200)'%3E%3Crect x='-900' y='-500' width='3400' height='3400' filter='url(%23p)'/%3E%3C/g%3E%3C/svg%3E");
 }
-/* A pedra fica recuada pela moldura creme (margem lateral do mockup). O ::before é folha,
+/* Uma pedra só para todas as seções escuras (.escuro envolve hero, grelhados, rodízio): a textura
+   atravessa as emendas sem linha (lição do Asami). A pedra fica recuada pela moldura creme. O ::before é folha,
    posicionado sem z-index: pinta no nível 0, abaixo de todas as camadas. */
 .pedra::before {
   content: "";
@@ -80,7 +81,7 @@ body {
   inset: 0 var(--margem);
   background-color: var(--pedra);
   background-image: var(--pedra-textura);
-  background-size: 100% 100%, cover;
-  background-position: center, center;
+  background-size: 100% 100%, 100% 100%;
+  background-position: center, top center;
   background-repeat: no-repeat;
 }

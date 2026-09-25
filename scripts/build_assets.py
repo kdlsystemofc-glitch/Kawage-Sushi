@@ -47,6 +47,41 @@ def fonte(id_):
     return Path(glob.glob(str(FONTE / f"imgi_{id_}_*"))[0])
 
 
+# Ajustes por slot depois do recorte:
+#   elipse: a chapa é oval; a elipse ajustada à borda inferior/esquerda (onde o recorte é confiável)
+#           corta o que sobrou da tábua e da travessa de trás no alto da imgi_21.
+#   esfumar_direita: a ponta da chapa sai do quadro na foto original; em vez de inventar a borda,
+#           a ponta some num degradê curto (fração da largura).
+AJUSTES = {"grelhado-chapa": {"elipse": True, "esfumar_direita": 0.06}}
+
+
+def ajustar(rgba, ajuste):
+    import cv2
+
+    a = np.array(rgba.split()[3])
+    h, w = a.shape
+    if ajuste.get("elipse"):
+        m = (a > 128).astype(np.uint8)
+        contornos, _ = cv2.findContours(m, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
+        c = max(contornos, key=cv2.contourArea)[:, 0, :]
+        sel = c[(c[:, 1] > 0.42 * h) | (c[:, 0] < 0.30 * w)]
+        sel = sel[sel[:, 0] < w - 6]
+        elipse = cv2.fitEllipse(sel.reshape(-1, 1, 2).astype(np.float32))
+        mascara = np.zeros_like(a)
+        (cx, cy), (ex, ey), ang = elipse
+        cv2.ellipse(mascara, ((cx, cy), (ex - 6, ey - 6), ang), 255, -1, cv2.LINE_AA)  # por dentro do aro: nada da tábua
+        mascara = cv2.GaussianBlur(mascara, (5, 5), 0)
+        a = (a.astype(np.float32) * (mascara / 255.0)).astype(np.uint8)
+    frac = ajuste.get("esfumar_direita")
+    if frac:
+        x = np.arange(w)
+        rampa = np.clip((w - 1 - x) / (frac * w), 0, 1) ** 1.5
+        a = (a * rampa[None, :]).astype(np.uint8)
+    rgba.putalpha(Image.fromarray(a))
+    x0, y0, x1, y1 = rgba.split()[3].point(lambda v: 255 if v > 8 else 0).getbbox()
+    return rgba.crop((x0, y0, x1, y1))
+
+
 def recortar(img, modelo):
     from rembg import new_session, remove
 
@@ -78,6 +113,8 @@ def salvar(img, nome):
     saidas = []
     for alvo in LARGURAS:
         w = min(alvo, img.width)
+        if saidas and w == saidas[-1][1]:
+            continue  # a fonte não rende mais que o tamanho anterior: não duplica o arquivo
         h = round(img.height * w / img.width)
         out = img.resize((w, h), Image.LANCZOS) if w != img.width else img
         caminho = DESTINO / f"{nome}-{alvo}.webp"
@@ -97,6 +134,8 @@ def main():
             l, t, r, b = caixa
             img = img.crop((round(l * img.width), round(t * img.height), round(r * img.width), round(b * img.height)))
         final = recortar(img, modelo) if tipo == "recorte" else img
+        if nome in AJUSTES:
+            final = ajustar(final, AJUSTES[nome])
         saidas = salvar(final, nome)
         linhas.append((nome, arq.name, Image.open(arq).size, tipo, modelo, alt, secao, saidas))
         print(f"{nome}: {', '.join(f'{s[0]} {s[1]}×{s[2]}' for s in saidas)}")
@@ -127,12 +166,16 @@ def escrever_md(linhas):
             if menor:
                 avisos.append(f"`{arq}`: a fonte ({src[:8]}…, {sw}×{sh}) rende só {w} px de largura após o corte; não foi ampliada.")
         t = f"recorte ({modelo})" if tipo == "recorte" else "moldura"
+        if len(cel) == 1:
+            cel.append("— (fonte pequena demais; usar o de 800)")
         md.append(f"| `{nome}` | {secao} | `{src[:8]}…` ({sw}×{sh}) | {t} | {cel[0]} | {cel[1]} | {alt} |")
     md += ["| `logo-kawage-150` | cabeçalho, rodapé | `imgi_2…` (150×150) | fundo branco → transparente | — | — | Kawage Sushi |", ""]
     md += ["## ⚠ Avisos", ""]
     md += [f"- **Slot sem arquivo: {n}** ({onde}). {motivo}" for n, onde, motivo in SEM_ARQUIVO]
     md += [f"- {a}" for a in avisos]
     md += [f"- `imgi_{k}`: {v}." for k, v in DESCARTADAS.items()]
+    md += ["- `grelhado-chapa`: recorte cruzado com uma elipse ajustada à borda da chapa (tira o resto da tábua e da travessa de trás); "
+           "a ponta direita, que sai do quadro na foto original, termina em degradê em vez de corte reto."]
     md += ["", "## Plates abstratos (sem arquivo de imagem)", "",
            "| Plate | Onde | Como |", "|---|---|---|",
            "| Fita de laca | seções 01–04 | SVG inline único `svg[data-fita]` no `index.html` (camadas: sombra, base, verso, brilho, reflexo) |",

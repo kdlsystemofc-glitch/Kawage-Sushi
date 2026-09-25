@@ -28,6 +28,15 @@ Decisões do responsável pelo projeto sobre as pendências da primeira versão 
 | "A mesa pede mais um" | **Pode ficar**, registrada como **texto autoral**, não slogan oficial do cliente | §1.3 |
 | Desktop | Extrapolado **por proporção** a partir do mockup; ambiguidades viram dúvidas explícitas | §7 |
 
+### Decisões · 25/09/2026 (após topo + hero)
+
+| Tema | Decisão | Onde está aplicada |
+|---|---|---|
+| D19 · altura no desktop | ✅ **A página mais alta no desktop é aceita.** Não compactar seções para caber na tela | §6, §7 |
+| D20 · largura extra | ✅ **Pedra, moldura creme e ilha acompanham a largura total da tela**; a composição (wordmark, fita, fotos, texto) fica no palco de até 1280 px, nas proporções do mockup | §6, §7 |
+| Teste visual 1920 e 2560 px | **Obrigatório antes de fechar a passada responsiva geral** (ainda não feito) | §7.3 |
+| Transição creme → pedra do hero | **Polimento, não bloqueia:** hoje é corte reto horizontal. Avaliar na passada de motion ou numa revisão visual | §8 |
+
 ---
 
 ## 0. Fatias do mockup (`design/secoes/`)
@@ -361,10 +370,10 @@ D1–D11 vêm do DIRECAO; D12 em diante surgiram com o mockup.
 | # | Dúvida | Proposta padrão, até decisão em contrário |
 |---|---|---|
 | **D18** | **Largura máxima do "palco".** Proporção pura faz o wordmark ter 61% de qualquer tela (1170 px numa tela de 1920) | Palco com teto de **1280 px**; fora dele, só pedra e margem creme |
-| **D19** | **Altura.** Escalar pela largura torna a página ~1,9× mais alta em 1440 px (a seção 2 fica com ~860 px, quase uma tela inteira por seção) | Aceitar. As proporções do mockup mandam; o espaço horizontal extra não encurta a página |
-| **D20** | **O que ocupa o espaço horizontal extra** no desktop: afastar os textos da fita (para as bordas do palco) ou manter a distância do mockup e deixar pedra livre | Manter as distâncias proporcionais do mockup; não criar colunas novas |
+| **D19** ✅ | **Altura.** Escalar pela largura torna a página ~1,9× mais alta em 1440 px | **Resolvida:** altura maior aceita; não forçar compactação |
+| **D20** ✅ | **O que ocupa o espaço horizontal extra** no desktop | **Resolvida:** pedra, moldura creme e ilha vão até as bordas da tela; a composição mantém as distâncias proporcionais do mockup dentro do palco; nenhuma coluna nova |
 | **D21** | **Celular (< 600 px):** as duplas texto + foto do mockup ficam lado a lado a 768; empilhadas, qual vem primeiro? | Seguir a ordem de leitura do mockup (de cima para baixo): foto A → título → foto B; wordmark → foto C → texto; texto do rodízio → foto D |
-| **D22** | **Close `imgi_70`** não existe no mockup: onde entra no desktop sem inventar composição? | Só no desktop, na coluna do texto dos grelhados, abaixo do parágrafo, com a largura da coluna. Se parecer composição nova, sai |
+| **D22** | **Close `imgi_70`** não existe no mockup | *Aplicada a regra padrão em 25/09:* abaixo do texto dos grelhados ele cairia sobre a curva direita da fita e sobre a área do shimeji (composição nova), então **saiu da seção 03**. O asset `grelhado-close` continua pronto para outro uso, se aprovado |
 
 ---
 
@@ -403,3 +412,21 @@ O mockup (768 px) é a **referência 1:1**. As outras larguras não são "novos 
    wordmarks mantêm a fração do mockup (61% / 72%); a fita ganha um caminho próprio, mais estreito.
 6. **Onde a regra não decidir, não se inventa:** a dúvida vai para a tabela D18+ e a composição fica a mais literal possível
    em relação ao mockup até a resposta.
+
+### 7.3 Verificação visual em telas grandes
+Antes de fechar a **passada responsiva geral**, rodar `npm run shots -- 1920 2560` e conferir:
+- o palco para em 1280 px e fica centralizado;
+- pedra, moldura creme e ilha chegam às bordas da tela (D20), sem faixa creme sobrando nem textura esticada;
+- a fita continua centrada no palco e não encosta nas bordas;
+- o logo de 150 px não passa de 75 px CSS.
+
+**Estado:** pendente (ainda não rodado).
+
+---
+
+## 8. Polimento (não bloqueia)
+
+| # | Item | Quando | Direção |
+|---|---|---|---|
+| P1 | **Transição creme → pedra do hero** tem bordas retas e abruptas (topo creme e ilha creme cortam a pedra em linhas horizontais e verticais secas) | Passada de motion ou revisão visual futura | Avaliar suavizar a borda com degradê curto ou uma borda com textura (pedra "lascada") em vez do corte reto. Manter a leitura da moldura creme; não virar um degradê longo |
+

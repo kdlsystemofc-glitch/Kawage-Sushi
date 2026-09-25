@@ -1,0 +1,12 @@
+node_modules/
+screenshots/
+__pycache__/
+
+# segredos e ambiente
+.env
+.env*
+
+# lixo de sistema
+*.log
+.DS_Store
+Thumbs.db

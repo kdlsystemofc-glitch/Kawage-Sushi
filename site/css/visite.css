@@ -1,0 +1,101 @@
+/* 05 · CTA + Visite + rodapé (referência: design/secoes/05-cta-fachada-rodape.png).
+   Em creme, fechando a moldura aberta pelo topo (DESIGN.md §2.3). Sem foto de fachada (D14b):
+   o slot fica comentado no HTML e aqui. */
+
+.visite {
+  position: relative; /* sem z-index: não cria contexto */
+  background: var(--creme);
+  padding-block: calc(var(--u) * 58) calc(var(--u) * 40);
+}
+
+/* CTA sobre a linha onde a pedra termina: metade na pedra, metade no creme, logo abaixo da
+   ponta da fita — como a pílula do mockup sobre a divisa pedra/fachada. */
+.visite__cta {
+  position: absolute;
+  z-index: var(--z-texto);
+  top: 0;
+  left: 50%;
+  translate: -50% -50%;
+}
+.pilula--cta {
+  min-height: max(44px, calc(var(--u) * 25));
+  padding-inline: 1.5em 1.3em;
+  background: var(--creme);
+  color: var(--tinta);
+  border: 1px solid var(--tinta);
+  font-size: max(12px, calc(var(--u) * 8.6));
+  letter-spacing: 0.08em;
+  white-space: nowrap;
+}
+.pilula--cta:hover { background: var(--tinta); color: var(--creme); }
+
+.visite__conteudo {
+  width: var(--palco);
+  margin-inline: auto;
+  padding-inline: calc(var(--u) * 150) calc(var(--u) * 110);
+  row-gap: var(--esp-3);
+  align-items: start;
+  color: var(--tinta-suave);
+  font-size: max(14px, calc(var(--u) * 9.6));
+  line-height: 1.5;
+}
+.visite__titulo {
+  grid-column: 1 / -1;
+  font-family: var(--fonte-titulo);
+  font-weight: 500;
+  font-size: calc(var(--u) * 28.5);
+  letter-spacing: var(--ls-titulo);
+  line-height: var(--lh-titulo);
+  text-transform: uppercase;
+  color: var(--tinta);
+}
+.visite__bloco { grid-column: span 4; display: grid; gap: calc(var(--u) * 5); justify-items: start; }
+.visite__bloco:nth-of-type(1) { grid-column: span 5; } /* endereço: cabe "São Bernardo do Campo, SP" numa linha */
+.visite__bloco:nth-of-type(3) { grid-column: span 3; }
+.visite__bloco address { font-style: normal; }
+.visite__sobre-2 { margin-top: calc(var(--u) * 8); }
+.visite__link, .visite__tel, .rodape a {
+  color: var(--tinta);
+  text-decoration: underline;
+  text-decoration-color: var(--laca);
+  text-underline-offset: 0.2em;
+}
+.visite__tel { font-weight: 500; }
+.visite__lista { display: grid; gap: calc(var(--u) * 2); }
+
+/* SLOT FACHADA · ver DESIGN.md §5.1. A foto entra com a cor dela: sem filter, sem overlay escurecedor.
+   Se for diurna, entra emoldurada (margem creme), não sangrando.
+.visite__fachada { grid-column: 1 / -1; aspect-ratio: 16 / 7; overflow: hidden; }
+.visite__fachada img { width: 100%; height: 100%; object-fit: cover; }
+*/
+
+/* ── rodapé: logo real (único símbolo de marca), endereço curto, telefone, © ── */
+.rodape {
+  background: var(--creme);
+  color: var(--tinta-suave);
+  font-size: max(13px, calc(var(--u) * 8.4));
+  line-height: 1.5;
+}
+.rodape__conteudo {
+  width: var(--palco);
+  margin-inline: auto;
+  padding: calc(var(--u) * 22) calc(var(--u) * 110) calc(var(--u) * 26) calc(var(--u) * 150);
+  border-top: 1px solid rgb(20 19 18 / 0.14);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  column-gap: calc(var(--u) * 18);
+  row-gap: var(--esp-1);
+}
+.rodape__logo { width: min(calc(var(--u) * 40), 64px); }
+.rodape__copy { margin-left: auto; }
+
+@media (max-width: 47.99rem) {
+  .visite { padding-block: calc(var(--u) * 64) calc(var(--u) * 40); }
+  .visite__conteudo { padding-inline: calc(var(--u) * 24); row-gap: var(--esp-4); }
+  .visite__titulo { font-size: calc(var(--u) * 38); }
+  .visite__bloco, .visite__bloco:nth-of-type(n) { grid-column: 1 / -1; }
+  .rodape__conteudo { padding: calc(var(--u) * 24); flex-direction: column; align-items: flex-start; }
+  .rodape__logo { width: 56px; }
+  .rodape__copy { margin-left: 0; }
+}

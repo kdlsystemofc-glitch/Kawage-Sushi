@@ -73,7 +73,9 @@ try {
       const vizinha = secoes[i + 1];
       if (!soSecao || s.nome === soSecao) {
         const path = join(OUT, `${w}-secao-${s.nome}.png`);
-        await page.screenshot({ path, fullPage: true, clip: { x: 0, y: s.y, width: w, height: s.h } });
+        // a última seção vai até o fim da página (inclui o rodapé, que fica fora da raiz da fita)
+        const h = vizinha ? s.h : (await page.evaluate(() => document.documentElement.scrollHeight)) - s.y;
+        await page.screenshot({ path, fullPage: true, clip: { x: 0, y: s.y, width: w, height: h } });
         console.log(`${w}px  seção ${s.nome} -> ${path}`);
       }
       if (vizinha && (!soSecao || soSecao === s.nome || soSecao === vizinha.nome)) {

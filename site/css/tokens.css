@@ -59,6 +59,7 @@
   --palco: min(100vw, var(--palco-max));
   --u: calc(var(--palco) / 768);
   --margem: clamp(6px, 0.92vw, 16px); /* moldura creme em volta da pedra (7 px em 768) */
+  --altura-fita: 1235; /* topo + hero + grelhados + rodízio, em --u (igual ao viewBox do desenho largo) */
 
   /* ── camadas (DESIGN.md §4.6) ── */
   --z-atras: 1;
@@ -85,5 +86,6 @@
   :root {
     --palco: 100vw;
     --u: calc(100vw / 390); /* no celular a unidade é 1px de uma tela de 390 */
+    --altura-fita: 1970;
   }
 }

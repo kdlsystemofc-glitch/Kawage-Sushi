@@ -61,6 +61,8 @@
   text-underline-offset: 0.2em;
 }
 .visite__tel { font-weight: 500; }
+/* caixa de toque de 44 px sem mudar o texto */
+.visite__link, .visite__tel, .rodape a { display: inline-flex; align-items: center; min-height: var(--toque); }
 .visite__lista { display: grid; gap: calc(var(--u) * 2); }
 
 /* SLOT FACHADA · ver DESIGN.md §5.1. A foto entra com a cor dela: sem filter, sem overlay escurecedor.
@@ -89,6 +91,10 @@
 }
 .rodape__logo { width: min(calc(var(--u) * 40), 64px); }
 .rodape__copy { margin-left: auto; }
+
+@media (min-width: 48rem) and (max-width: 63.99rem) {
+  .visite__bloco, .visite__bloco:nth-of-type(n) { grid-column: span 6; }
+}
 
 @media (max-width: 47.99rem) {
   .visite { padding-block: calc(var(--u) * 64) calc(var(--u) * 40); }

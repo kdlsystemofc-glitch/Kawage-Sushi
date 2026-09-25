@@ -368,7 +368,7 @@ D1–D11 vêm do DIRECAO; D12 em diante surgiram com o mockup.
 ### Novas: ambiguidades da extrapolação para desktop (§7)
 | # | Dúvida | Proposta padrão, até decisão em contrário |
 |---|---|---|
-| **D18** | **Largura máxima do "palco".** Proporção pura faz o wordmark ter 61% de qualquer tela (1170 px numa tela de 1920) | Palco com teto de **1280 px**; fora dele, só pedra e margem creme |
+| **D18** ✅ | **Largura máxima do "palco"** | **Resolvida na passada responsiva (25/09):** teto de **1600 px**. Com 1280, em 2560 px a composição ficava perdida no meio da tela; com 1600 ela ocupa 83% em 1920 e 62% em 2560, nas mesmas proporções |
 | **D19** ✅ | **Altura.** Escalar pela largura torna a página ~1,9× mais alta em 1440 px | **Resolvida:** altura maior aceita; não forçar compactação |
 | **D20** ✅ | **O que ocupa o espaço horizontal extra** no desktop | **Resolvida:** pedra, moldura creme e ilha vão até as bordas da tela; a composição mantém as distâncias proporcionais do mockup dentro do palco; nenhuma coluna nova |
 | **D21** | **Celular (< 600 px):** as duplas texto + foto do mockup ficam lado a lado a 768; empilhadas, qual vem primeiro? | Seguir a ordem de leitura do mockup (de cima para baixo): foto A → título → foto B; wordmark → foto C → texto; texto do rodízio → foto D |
@@ -419,7 +419,15 @@ Antes de fechar a **passada responsiva geral**, rodar `npm run shots -- 1920 256
 - a fita continua centrada no palco e não encosta nas bordas;
 - o logo de 150 px não passa de 75 px CSS.
 
-**Estado:** pendente (ainda não rodado).
+**Estado:** ✅ feito em 25/09 (`npm run auditar`). Com o palco em 1600 px (D18), a composição não fica perdida em 2560; pedra, moldura e ilha chegam às bordas; a fita fica dentro do palco; o logo não passa de 75 px CSS.
+
+### 7.4 Auditoria responsiva (`scripts/auditar.mjs`)
+Telas: 2560×1440, 1920×1080, 1440×900, 1366×768, 1280×720, 1024×768, 768×1024, 430×932, 390×844, 360×740, 320×568, 844×390.
+Modos: normal; zoom do navegador 200% (telas ≥ 1024); zoom só de texto 200%; tema escuro + movimento reduzido; sem as fontes do site.
+Reprova: rolagem horizontal, erro de console, pedido a `/design`, texto cortado/sobreposto/fora da ilha/fora da seção,
+texto sobre a fita, alvo de toque < 44×44, fita ausente numa seção escura, cortada na borda do palco, sem cobrir o "A" do
+wordmark escuro ou cortada no fim da pedra. `--webkit` roda o modo normal no motor do Safari.
+**Estado em 25/09:** 0 problemas no Chromium (todas as telas e modos) e no WebKit (6 telas).
 
 ---
 
@@ -427,5 +435,7 @@ Antes de fechar a **passada responsiva geral**, rodar `npm run shots -- 1920 256
 
 | # | Item | Quando | Direção |
 |---|---|---|---|
+| P2 | **Fita: borda interna das curvas fechadas** (curva direita do rodízio) forma um pequeno recorte, e as áreas largas mostram uma quadrícula leve de tons | Passada de motion ou revisão visual | Ajustar o gerador (offset com raio mínimo na borda interna; tons em gradiente contínuo por tira em vez de faixas) |
+| P3 | **Zoom só de texto (Firefox "Zoom text only")**: as fontes usam mínimos em px e escala em `--u`, então esse modo não aumenta o texto (o zoom normal do navegador funciona) | Antes de publicar, se o público exigir | Trocar os mínimos para `rem` e deixar os blocos de texto crescerem (a ilha já precisaria acompanhar a altura do texto) |
 | P1 | **Transição creme → pedra do hero** tem bordas retas e abruptas (topo creme e ilha creme cortam a pedra em linhas horizontais e verticais secas) | Passada de motion ou revisão visual futura | Avaliar suavizar a borda com degradê curto ou uma borda com textura (pedra "lascada") em vez do corte reto. Manter a leitura da moldura creme; não virar um degradê longo |
 

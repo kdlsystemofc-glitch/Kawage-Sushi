@@ -38,7 +38,7 @@
   position: absolute;
   z-index: var(--z-texto);
   right: calc(var(--u) * 111);
-  top: calc(var(--u) * 136);
+  top: calc(var(--u) * 128);
   width: calc(var(--u) * 190);
   display: grid;
   gap: calc(var(--u) * 7);
@@ -67,5 +67,11 @@
   .grelhados { height: calc(var(--u) * 480); }
   .grelhados__wordmark { top: calc(var(--u) * 14); font-size: calc(var(--u) * 69); }
   .grelhados__foto { left: calc(var(--u) * 50); top: calc(var(--u) * 100); width: calc(var(--u) * 290); }
-  .grelhados__texto { right: calc(var(--u) * 60); top: calc(var(--u) * 330); width: calc(var(--u) * 270); gap: calc(var(--u) * 8); }
+  .grelhados__texto { right: calc(var(--u) * 60); top: calc(var(--u) * 348); width: calc(var(--u) * 270); gap: calc(var(--u) * 8); }
+}
+
+/* Sem text-box (Safari < 18.2, Firefox): a caixa inclui o espaço acima das maiúsculas da Cormorant
+   (0,19 em com line-height 1, medido); sobe o mesmo tanto para as letras ficarem no mesmo lugar. */
+@supports not (text-box: trim-both cap alphabetic) {
+  .grelhados__wordmark { margin-top: -0.19em; }
 }

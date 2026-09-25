@@ -26,6 +26,7 @@
   gap: 0.55em;
   min-height: calc(var(--u) * 23);
   padding: 0.35em 0.95em 0.35em 1.05em;
+  box-sizing: border-box;
   border-radius: var(--raio-pilula);
   background: var(--tinta);
   color: var(--creme);
@@ -38,9 +39,11 @@
   text-decoration: none;
 }
 .pilula svg { width: 1.15em; height: 1.15em; }
-/* alvo de toque de 44 px sem mudar o desenho da pílula */
-.pilula::before { content: ""; position: absolute; inset: min(0px, calc((100% - var(--toque)) / 2)) -4px; }
-.pilula:hover { background: var(--laca); }
+/* O botão tem 44 px (alvo de toque); a pílula visual, do tamanho do mockup, fica dentro dele. */
+.cabecalho__menu { display: inline-flex; align-items: center; justify-content: center; min-height: var(--toque); min-width: var(--toque); }
+.cabecalho__menu:hover .pilula { background: var(--laca); }
+.cabecalho__menu:focus-visible { outline: none; }
+.cabecalho__menu:focus-visible .pilula { outline: 2px solid var(--laca); outline-offset: 3px; }
 
 .menu {
   position: absolute;
@@ -51,7 +54,7 @@
   color: var(--creme);
   border-radius: 12px;
 }
-.menu a { display: block; padding-block: var(--esp-1); text-decoration: none; }
+.menu a { display: flex; align-items: center; min-height: var(--toque); text-decoration: none; }
 
 /* ── seção ── */
 .topo {
@@ -85,4 +88,10 @@
   .pilula { min-height: calc(var(--u) * 30); font-size: 12px; }
   .topo { height: calc(var(--u) * 170); }
   .topo__wordmark { top: calc(var(--u) * 92); font-size: calc(var(--u) * 67); }
+}
+
+/* Sem text-box (Safari < 18.2, Firefox): a caixa inclui o espaço acima das maiúsculas da Cormorant
+   (0,19 em com line-height 1, medido); sobe o mesmo tanto para as letras ficarem no mesmo lugar. */
+@supports not (text-box: trim-both cap alphabetic) {
+  .topo__wordmark { margin-top: -0.19em; }
 }

@@ -28,8 +28,16 @@
   font-display: swap;
   src: url("../assets/fonts/instrument-sans-latin-wght-normal.woff2") format("woff2");
 }
+/* Reservas com a mesma largura média das fontes do site (medido: Cormorant = 96% da Times;
+   Instrument = 101% da Segoe UI, 98,5% da Arial/Helvetica). Se as woff2 não carregarem, o texto
+   ocupa praticamente o mesmo espaço e a composição não quebra. */
+@font-face { font-family: "Cormorant Reserva"; src: local("Times New Roman"), local("TimesNewRomanPSMT"), local("Times"); size-adjust: 96%; }
+@font-face { font-family: "Instrument Reserva"; src: local("Segoe UI"); size-adjust: 101%; }
+@font-face { font-family: "Instrument Reserva 2"; src: local("Helvetica Neue"), local("Helvetica"), local("Arial"); size-adjust: 98.5%; }
 
 :root {
+  color-scheme: light; /* o site é claro/escuro por desenho: sem escurecimento automático do navegador */
+
   /* ── cor (amostrada do mockup, DESIGN.md §3.1) ── */
   --creme: #EDE7DB;
   --creme-luz: #F4EFE6;
@@ -44,8 +52,8 @@
   --laca-brilho: #C0605A;
 
   /* ── tipografia (DESIGN.md §3.2) ── */
-  --fonte-titulo: "Cormorant Garamond", "Cormorant", Garamond, "Times New Roman", serif;
-  --fonte-apoio: "Instrument Sans", "Segoe UI", system-ui, sans-serif;
+  --fonte-titulo: "Cormorant Garamond", "Cormorant Reserva", Garamond, "Times New Roman", serif;
+  --fonte-apoio: "Instrument Sans", "Instrument Reserva", "Instrument Reserva 2", system-ui, sans-serif;
   --ls-sobre: 0.14em;
   --ls-titulo: 0.02em;
   --ls-wordmark: -0.01em;
@@ -54,8 +62,8 @@
 
   /* ── palco e unidade de proporção (DESIGN.md §7) ──
      --u = 1px do mockup de 768 px. Tudo na composição é medido em --u, então o desktop
-     é o mockup escalado (teto do palco: 1280 px, D18). Abaixo de 768 px, --u = 1px de uma tela de 390. */
-  --palco-max: 1280px;
+     é o mockup escalado (teto do palco: 1600 px, D18). Abaixo de 768 px, --u = 1px de uma tela de 390. */
+  --palco-max: 1600px; /* D18: 1280 deixava a composição perdida em telas de 2560 */
   --palco: min(100vw, var(--palco-max));
   --u: calc(var(--palco) / 768);
   --margem: clamp(6px, 0.92vw, 16px); /* moldura creme em volta da pedra (7 px em 768) */

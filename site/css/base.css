@@ -2,7 +2,7 @@
    nenhum ancestral de [data-camada], pode ter transform, filter, opacity < 1, isolation,
    mix-blend-mode, will-change, contain ou z-index posicionado. Efeitos vão na folha. */
 
-html { background: var(--creme); overflow-x: clip; }
+html { background: var(--creme); overflow-x: hidden; overflow-x: clip; } /* hidden: Safari < 16 */
 body {
   background: var(--creme);
   color: var(--tinta);
@@ -20,6 +20,7 @@ body {
 }
 .pular {
   position: absolute; left: var(--esp-2); top: -100px; z-index: var(--z-cabecalho);
+  display: inline-flex; align-items: center; min-height: var(--toque);
   padding: var(--esp-1) var(--esp-2); background: var(--tinta); color: var(--creme);
 }
 .pular:focus { top: var(--esp-2); }

@@ -8,8 +8,68 @@
   <meta name="theme-color" content="#0A0B0C">
   <meta name="color-scheme" content="light">
   <link rel="icon" href="assets/logo-kawage-150.webp" type="image/webp">
-  <link rel="preload" href="assets/fonts/cormorant-garamond-latin-500-normal.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="preload" href="assets/fonts/instrument-sans-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
+  <!-- Antes da 1ª pintura (DESIGN.md §9, D23–D25): qualidade do aparelho (a pedra depende dela),
+       classe js-motion e o carregador do motion. Inline de propósito: um arquivo a mais atrasaria o
+       LCP. GSAP, ScrollTrigger, Lenis e core.js só são pedidos depois do load, na 1ª interação ou
+       2,5 s depois — nunca durante uma rolagem. Se o núcleo não subir em 6 s, js-motion sai e o
+       site fica no estado estático (que é o estado final aprovado). -->
+  <script>
+    (function (h, n) {
+      var q = /[?&]quality=(low|high)(?:&|$)/.exec(location.search);
+      h.setAttribute("data-quality", q ? q[1] : n.hardwareConcurrency <= 4 || n.deviceMemory <= 4 ||
+        (n.connection && n.connection.saveData) || innerWidth < 768 ? "low" : "high");
+      if (!matchMedia("(prefers-reduced-motion: reduce)").matches) h.classList.add("js-motion");
+      addEventListener("load", function () {
+        var eventos = ["scroll", "wheel", "touchstart", "pointerdown", "keydown"];
+        var pedido = false, rolou = 0, mexeu = 0, agendado = 0;
+        var rolagem = function () { rolou = Date.now(); };
+        var agendar = function (ms) { clearTimeout(agendado); agendado = setTimeout(carregar, ms); };
+        var desistir = function () {
+          if (h.hasAttribute("data-motion-ready")) return;
+          h.classList.remove("js-motion");
+          h.setAttribute("data-motion-ready", "failed");
+        };
+        var gesto = function () { mexeu = Date.now(); agendar(600); };
+        var carregar = function () {
+          if (pedido) return;
+          // nunca no meio de uma rolagem ou de uma sequência de gestos: ao se registrar, o
+          // ScrollTrigger reescreve a posição de rolagem e interromperia uma rolagem em andamento
+          if (Date.now() - rolou < 250 || Date.now() - mexeu < 600) return agendar(250);
+          pedido = true;
+          eventos.forEach(function (e) { removeEventListener(e, gesto, true); });
+          removeEventListener("scroll", rolagem);
+          ["js/vendor/gsap.min.js", "js/vendor/ScrollTrigger.min.js", "js/vendor/lenis.min.js", "js/motion/core.js"]
+            .forEach(function (src) {
+              var s = document.createElement("script");
+              s.src = src;
+              s.async = false; // executa na ordem da fila
+              // só o núcleo decide: sem GSAP ele mesmo desliga; sem Lenis segue sem rolagem suave
+              if (/core\.js$/.test(src)) s.onload = s.onerror = desistir;
+              document.head.appendChild(s);
+            });
+          setTimeout(desistir, 6000);
+        };
+        addEventListener("scroll", rolagem, { passive: true });
+        eventos.forEach(function (e) { addEventListener(e, gesto, { capture: true, passive: true }); });
+        // aberta numa âncora ou já rolada: carrega logo (carregar() ainda espera a rolagem assentar)
+        agendar(scrollY > 0 || location.hash ? 300 : 2500);
+      });
+    })(document.documentElement, navigator);
+  </script>
+  <!-- Fontes: preload por http(s). Por file:// (duplo clique) o navegador bloqueia @font-face de arquivo
+       local, então entra um CSS com as mesmas fontes embutidas (css/fontes-file.css). -->
+  <script>
+    (function () {
+      var arquivo = location.protocol === "file:";
+      (arquivo ? ["css/fontes-file.css"] : ["assets/fonts/cormorant-garamond-latin-500-normal.woff2", "assets/fonts/instrument-sans-latin-wght-normal.woff2"])
+        .forEach(function (href) {
+          var l = document.createElement("link");
+          if (arquivo) { l.rel = "stylesheet"; } else { l.rel = "preload"; l.as = "font"; l.type = "font/woff2"; l.crossOrigin = ""; }
+          l.href = href;
+          document.currentScript.before(l);
+        });
+    })();
+  </script>
   <link rel="stylesheet" href="css/tokens.css">
   <link rel="stylesheet" href="css/reset.css">
   <link rel="stylesheet" href="css/base.css">
@@ -27,12 +87,21 @@
       <img src="assets/logo-kawage-150.webp" alt="" width="150" height="150">
     </a>
     <!-- Instagram: oculto até o @ ser confirmado (DESIGN.md D2). -->
+    <div class="cabecalho__acoes">
+    <!-- Pausa das animações (D28): só aparece quando o motion sobe; sem JS não existe. -->
+    <button class="cabecalho__pausa" type="button" data-pause aria-pressed="false" aria-label="Pausar animações" hidden>
+      <span class="pilula pilula--icone">
+        <svg class="icone-pausa" viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="M5.5 3.5v9M10.5 3.5v9" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+        <svg class="icone-play" viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="M5.5 3.5v9l7-4.5z" fill="currentColor"/></svg>
+      </span>
+    </button>
     <button class="cabecalho__menu" type="button" aria-expanded="false" aria-controls="menu">
       <span class="pilula">
         Menu
         <svg viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="M2 4.5h12M2 8h12M2 11.5h12" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
       </span>
     </button>
+    </div>
     <nav class="menu" id="menu" aria-label="Principal" hidden>
       <ul role="list">
         <li><a href="#hero">A casa</a></li>

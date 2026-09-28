@@ -87,3 +87,46 @@ body {
   background-position: center, top center;
   background-repeat: no-repeat;
 }
+
+/* Qualidade "low" (D24): a mesma pedra com 4 oitavas de ruído em vez de 7. Visualmente quase igual
+   no celular; a maior tarefa de rasterização cai ~25 % (motion-baseline.md). Vale desde a 1ª
+   pintura: data-quality é posto no <head>, antes dela. */
+:root[data-quality="low"] .pedra {
+  --pedra-textura:
+    radial-gradient(120% 80% at 70% 30%, transparent 0 40%, rgb(4 5 6 / 0.55) 100%),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1600 2400' preserveAspectRatio='xMidYMin slice'%3E%3Cfilter id='p' x='0' y='0' width='100%25' height='100%25'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.0036 0.014' numOctaves='4' seed='23'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3CfeDiffuseLighting lighting-color='%232A2928' surfaceScale='15' diffuseConstant='1'%3E%3CfeDistantLight azimuth='210' elevation='16'/%3E%3C/feDiffuseLighting%3E%3C/filter%3E%3Cg transform='rotate(-24 800 1200)'%3E%3Crect x='-900' y='-500' width='3400' height='3400' filter='url(%23p)'/%3E%3C/g%3E%3C/svg%3E");
+}
+
+/* ══ Motion: infraestrutura global (DESIGN.md §9). Nenhuma seção é animada aqui. ══
+   Regra de ouro: todo estado inicial escondido vive sob html.js-motion. A classe é posta no
+   <head> antes da pintura e sai se o motion falhar ou o modo for "reduced" — sem ela, tudo
+   aparece como no layout estático. */
+
+/* revelação declarativa (data-reveal): estado inicial */
+.js-motion [data-reveal]:not([data-revealed]) { opacity: 0; }
+.js-motion [data-reveal="up"]:not([data-revealed]) { transform: translateY(var(--reveal-y)); }
+.js-motion [data-reveal="scale"]:not([data-revealed]) { transform: scale(var(--reveal-scale)); }
+
+/* pausa: botão (data-motion="paused") e aba oculta (data-page-hidden) congelam as animações CSS */
+:root[data-motion="paused"] *,
+:root[data-motion="paused"] *::before,
+:root[data-motion="paused"] *::after,
+:root[data-page-hidden] *,
+:root[data-page-hidden] *::before,
+:root[data-page-hidden] *::after {
+  animation-play-state: paused !important;
+}
+
+/* loops CSS fora da tela (data-loop + IntersectionObserver em core.js) */
+[data-loop][data-offscreen],
+[data-loop][data-offscreen] *,
+[data-loop][data-offscreen] *::before,
+[data-loop][data-offscreen] *::after {
+  animation-play-state: paused !important;
+}
+
+/* Lenis (equivalente ao lenis.css). scroll-behavior: smooth (reset.css) faria cada passo do Lenis
+   virar uma animação própria. */
+html.lenis, html.lenis body { height: auto; }
+html.lenis.lenis-smooth { scroll-behavior: auto !important; }
+.lenis.lenis-smooth iframe { pointer-events: none; }

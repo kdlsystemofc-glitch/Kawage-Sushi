@@ -42,6 +42,15 @@
 /* O botão tem 44 px (alvo de toque); a pílula visual, do tamanho do mockup, fica dentro dele. */
 .cabecalho__menu { display: inline-flex; align-items: center; justify-content: center; min-height: var(--toque); min-width: var(--toque); }
 .cabecalho__menu:hover .pilula { background: var(--laca); }
+.cabecalho__acoes { display: flex; align-items: center; gap: calc(var(--u) * 2); }
+.cabecalho__pausa { display: inline-flex; align-items: center; justify-content: center; min-height: var(--toque); min-width: var(--toque); }
+.cabecalho__pausa[hidden] { display: none; }
+.cabecalho__pausa:hover .pilula { background: var(--laca); }
+.cabecalho__pausa:focus-visible { outline: none; }
+.cabecalho__pausa:focus-visible .pilula { outline: 2px solid var(--laca); outline-offset: 3px; }
+.pilula--icone { padding: 0; width: calc(var(--u) * 23); min-width: 28px; min-height: 28px; justify-content: center; }
+.icone-play, [aria-pressed="true"] .icone-pausa { display: none; }
+[aria-pressed="true"] .icone-play { display: block; }
 .cabecalho__menu:focus-visible { outline: none; }
 .cabecalho__menu:focus-visible .pilula { outline: 2px solid var(--laca); outline-offset: 3px; }
 

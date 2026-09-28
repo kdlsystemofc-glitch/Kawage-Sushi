@@ -2,6 +2,7 @@
 //   npm run auditar                  -> todas as telas, todos os modos
 //   npm run auditar -- 390x844       -> só essas telas (modo normal + os modos que se aplicam)
 //   npm run auditar -- --webkit      -> no motor do Safari (WebKit), só o modo normal
+//   npm run auditar -- --motion full|reduced|paused  -> carrega o motion (gesto) e mede com ele ativo
 // Saída: screenshots/auditoria/<tela>-<modo>.png e um resumo no terminal. Sai com 1 se houver erro.
 //
 // Checagens por tela/modo:
@@ -40,6 +41,8 @@ const MODOS = {
 
 const pedidos = process.argv.slice(2).filter((a) => /^\d+x\d+$/.test(a));
 const WEBKIT = process.argv.includes("--webkit");
+const iMotion = process.argv.indexOf("--motion");
+const MOTION = iMotion >= 0 ? process.argv[iMotion + 1] : null;
 const telas = Object.entries(TELAS).filter(([k]) => !pedidos.length || pedidos.includes(k));
 
 const server = createServer(async (req, res) => {
@@ -131,13 +134,13 @@ const resumo = [];
 
 for (const [nome, [W, H]] of telas) {
   for (const [modo, aplica] of Object.entries(MODOS)) {
-    if (!aplica([W, H]) || (WEBKIT && modo !== "normal")) continue;
+    if (!aplica([W, H]) || (WEBKIT && modo !== "normal") || (MOTION && !["normal", "zoom200", "texto200"].includes(modo))) continue;
     const vw = modo === "zoom200" ? Math.round(W / 2) : W, vh = modo === "zoom200" ? Math.round(H / 2) : H;
     const ctx = await browser.newContext({
       viewport: { width: vw, height: vh },
       deviceScaleFactor: modo === "zoom200" ? 2 : 1,
       colorScheme: modo === "escuroReduzido" ? "dark" : "light",
-      reducedMotion: modo === "escuroReduzido" ? "reduce" : "no-preference",
+      reducedMotion: modo === "escuroReduzido" || MOTION === "reduced" ? "reduce" : "no-preference",
       hasTouch: W < 1024, isMobile: W < 900 && H > W,
     });
     const page = await ctx.newPage();
@@ -148,6 +151,12 @@ for (const [nome, [W, H]] of telas) {
     page.on("request", (q) => /\/design\//.test(q.url()) && console_.push(`PEDIDO A /design: ${q.url()}`));
     if (modo === "semFontes") await page.route("**/*.woff2", (r) => r.abort());
     await page.goto(url, { waitUntil: "networkidle" });
+    if (MOTION) {
+      await page.keyboard.press("Shift"); // gesto que não clica em nada: dispara o carregador
+      await page.waitForFunction(() => document.documentElement.dataset.motionReady === "true", null, { timeout: 12000 });
+      if (MOTION === "paused") await page.click("[data-pause]");
+      await page.waitForTimeout(200);
+    }
     if (modo === "texto200") await page.addStyleTag({ content: "html{font-size:200% !important}" });
     await page.evaluate(() => document.fonts.ready);
     await page.waitForTimeout(150);
@@ -158,7 +167,7 @@ for (const [nome, [W, H]] of telas) {
     if (m.alvos.length) erros.push(...m.alvos.map((a) => `alvo de toque pequeno: ${a}`));
 
     // screenshot normal + um sem texto para medir a fita atrás do texto
-    const arq = join(OUT, `${nome}-${modo}${WEBKIT ? "-webkit" : ""}.png`);
+    const arq = join(OUT, `${nome}-${modo}${WEBKIT ? "-webkit" : ""}${MOTION ? "-motion-" + MOTION : ""}.png`);
     const buf = await page.screenshot({ path: arq, fullPage: true });
     await page.addStyleTag({ content: "*{color:transparent!important;text-shadow:none!important;text-decoration-color:transparent!important} .pilula,.nota__valor{background:transparent!important;border-color:transparent!important} .pilula svg{visibility:hidden}" });
     const semTexto = png(await page.screenshot({ fullPage: true }));

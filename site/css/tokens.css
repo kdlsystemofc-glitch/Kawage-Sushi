@@ -81,6 +81,16 @@
     drop-shadow(0 calc(var(--u) * 3) calc(var(--u) * 3) rgb(10 11 12 / 0.55))
     drop-shadow(0 calc(var(--u) * 18) calc(var(--u) * 22) rgb(10 11 12 / 0.45));
 
+  /* ── motion (DESIGN.md §9) ── */
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-soft: cubic-bezier(0.4, 0, 0.2, 1);
+  --t-fade: 200ms;   /* "reduced": só fades desta duração (D23) */
+  --t-mid: 600ms;
+  --t-slow: 1200ms;  /* rolagem até uma âncora com o Lenis */
+  --reveal-at: 0.35; /* fração visível que dispara data-reveal */
+  --reveal-y: 1.5rem;
+  --reveal-scale: 0.96;
+
   /* ── espaçamento ── */
   --esp-1: clamp(0.375rem, 0.3rem + 0.3vw, 0.5rem);
   --esp-2: clamp(0.625rem, 0.5rem + 0.5vw, 1rem);

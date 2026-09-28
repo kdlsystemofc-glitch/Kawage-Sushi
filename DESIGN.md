@@ -439,3 +439,63 @@ wordmark escuro ou cortada no fim da pedra. `--webkit` roda o modo normal no mot
 | P3 | **Zoom só de texto (Firefox "Zoom text only")**: as fontes usam mínimos em px e escala em `--u`, então esse modo não aumenta o texto (o zoom normal do navegador funciona) | Antes de publicar, se o público exigir | Trocar os mínimos para `rem` e deixar os blocos de texto crescerem (a ilha já precisaria acompanhar a altura do texto) |
 | P1 | **Transição creme → pedra do hero** tem bordas retas e abruptas (topo creme e ilha creme cortam a pedra em linhas horizontais e verticais secas) | Passada de motion ou revisão visual futura | Avaliar suavizar a borda com degradê curto ou uma borda com textura (pedra "lascada") em vez do corte reto. Manter a leitura da moldura creme; não virar um degradê longo |
 
+
+---
+
+## 9. Motion — base global (28/09/2026)
+
+Infraestrutura só: **nenhuma seção é animada ainda.** O estado estático (sem JS) continua sendo o estado final
+aprovado, fita incluída. Numeração: segue a sequência deste documento (D1–D22), a partir de **D23**.
+
+**Arquivos:** `site/js/motion/core.js` (núcleo), `site/js/vendor/` (GSAP 3.15.0, ScrollTrigger 3.15.0, Lenis 1.3.26, UMD/IIFE,
+auto-hospedados), carregador inline no `<head>` do `index.html`, regras globais no fim de `site/css/base.css`, tokens de
+motion em `tokens.css`. Testes: `npm run test:motion`, `npm run auditar -- --motion full|reduced|paused`,
+`python tests/fita/verificar_empilhamento.py --motion`. Linha de base: `motion-baseline.md`.
+
+### Decisões
+
+| # | Decisão | Por quê |
+|---|---|---|
+| **D23** | **Três modos:** `full` (padrão), `reduced` (`prefers-reduced-motion`, em tempo real) e `paused` (`html[data-motion="paused"]`, pelo botão). Precedência: paused > reduced > full. Em `reduced`: sem loops (`motion.loop` recusa), sem parallax, sem Lenis e revelações só com fade de `--t-fade` (200 ms), sem transform. A pausa congela a timeline global do GSAP e as animações CSS (`animation-play-state`), conclui na hora o que estava a meio caminho e tira o transform do parallax | Mesma lógica aprovada no Asami; `reduced` nunca esconde nada antes da pintura |
+| **D24** | **Qualidade `low` / `high`**, decidida no `<head>` antes da 1ª pintura: `low` se `hardwareConcurrency ≤ 4`, `deviceMemory ≤ 4`, `saveData` ou tela < 768 px. Fixa por carga; `?quality=low\|high` força para testes. **Pedra em `low`: o mesmo filtro com 4 oitavas de ruído em vez de 7** (visualmente quase igual no celular; a maior tarefa de rasterização cai ~25 %). **Sem versão estática pré-renderizada:** uma imagem de ruído comprime mal (100–200 KB) e iria justamente para aparelhos e redes fracos, disputando banda com o LCP; o custo do filtro é pago uma vez por bloco da tela, não a cada quadro. Em `low` o parallax fica desligado; **a fita não muda** (é SVG estático; só a animarão as próximas etapas, que devem prever versão reduzida em `low`) | Medição de laboratório em `motion-baseline.md` (não é aparelho real) |
+| **D25** | **Carregamento tardio:** GSAP, ScrollTrigger, Lenis e `core.js` (51 KB gzip) só são pedidos depois do `load`, na 1ª interação (`scroll`, `wheel`, `touchstart`, `pointerdown`, `keydown`) ou 2,5 s depois, o que vier antes; nunca durante uma rolagem ou sequência de gestos. Aberta numa âncora ou já rolada: carrega em 300 ms. Se o núcleo não subir em 6 s, `js-motion` sai e o site fica estático. Consequência: **nada da 1ª tela pode depender do GSAP** (entradas do hero, se houver, serão CSS) | Regra do Asami (D29 de lá): não atrasar o LCP |
+| **D26** | **Rolagem suave com Lenis só em `full`**, sincronizada com o ScrollTrigger (`lenis.on("scroll", ScrollTrigger.update)` + `gsap.ticker`). Âncoras da página (menu, "pular para o conteúdo") são interceptadas e roladas com duração fixa `--t-slow` e `--ease-soft`, offset zero; por teclado, o foco acompanha o alvo. Sem Lenis, os links são nativos e funcionam igual | Não quebrar o menu; a cauda do `lerp` desfaria uma rolagem nativa logo depois |
+| **D27** | **Utilitários declarativos** (nenhum elemento usa ainda): `data-reveal="up\|fade\|scale"` (+ `data-reveal-delay` em ms), `data-parallax="fator"`, `data-loop`. Mesma lógica do Asami: ScrollTrigger dispara a revelação a `--reveal-at` (35 %) visível; loops pausam fora da tela (IntersectionObserver, margem 10 %) e com a aba oculta (`data-page-hidden`); parallax com repouso = seção alinhada ao topo (âncora mostra o layout estático exato) | Reuso do que já foi testado |
+| **D28** | **Botão de pausa** no cabeçalho, à esquerda do MENU: `[data-pause]`, `aria-pressed`, rótulo "Pausar/Retomar animações", ícone ⏸/▶ na mesma pílula do MENU, alvo de toque de 44 px. Começa `hidden` e só aparece quando o motion sobe: sem JS (ou com falha) ele não existe para o usuário | Pausa pedida no briefing; controle inútil sem motion não deve aparecer |
+| **D29** | **Fontes por `file://`:** abrindo por duplo clique, o Chrome bloqueia `@font-face` de arquivo local por CORS e o site caía nas fontes de reserva (defeito anterior ao motion, achado pelo teste de motion, que roda por `file://`). Agora o preload das fontes é criado por script só em http(s), e em `file://` entra `css/fontes-file.css` (as mesmas 4 woff2 em base64, 131 KB, gerado por `scripts/fontes-file.py`), que nunca é baixado em http(s) | O site precisa abrir por duplo clique |
+
+### Regras para as próximas etapas (contrato)
+
+- **Só `transform` e `opacity`.** Nunca `width`, `height`, `top`, `left`, `margin`, nem `filter` animado.
+- **Nada pode forçar a pedra a ser redesenhada.** Nunca animar `.escuro`, `.pedra::before`, `<section>`, `.palco` ou
+  `.pagina`; animar só folhas (as camadas `[data-camada]` ou elementos dentro delas), que ganham camada própria no
+  compositor (`will-change` posto pelos utilitários só durante a animação).
+- **Empilhamento da fita (§4.6):** transform e opacity criam contexto de empilhamento. Por isso só nas folhas `[data-camada]`
+  ou dentro delas, nunca num ancestral. `npm run test:fita` e `--motion` verificam.
+- **Estados iniciais escondidos só sob `html.js-motion`** (CSS) ou criados dentro de `motion.register`. Sem JS, com falha ou
+  em `reduced`, tudo aparece.
+- **Nada escondido na 1ª tela** (topo e começo do hero): o motion chega depois do load (D25) e o LCP é a foto A.
+- **Não combinar `data-reveal` e `data-parallax` no mesmo elemento** (os dois escrevem em `transform`): usar um wrapper
+  interno, nunca um ancestral da camada.
+- Como uma seção se registra:
+
+```js
+// js/motion/<secao>.js — entra na fila do carregador do <head>, depois de core.js
+motion.register((m) => {
+  if (m.base === "reduced") return;             // nada de loop/parallax/entrada longa
+  // tweens e ScrollTriggers criados aqui são desfeitos sozinhos quando m.base muda
+  if (m.quality === "low") return;              // camadas caras só em "high"
+  return () => { /* limpeza do que não for GSAP */ };
+});
+```
+
+### Custo (medido em 28/09)
+
+| Item | Antes (`motion-baseline.md`) | Depois |
+|---|---|---|
+| Lighthouse mobile, desempenho (mediana de 5) | 88 | **86** (−2; limite era −3) |
+| LCP / FCP (mediana) | 3,5 s / 2,4 s | 3,7 s / 2,6 s |
+| TBT / CLS | 0 ms / 0 | 0 ms / 0 |
+| JS | 0 | 51 KB gzip (160 KB sem compressão), só depois do `load` |
+| Peso total medido pelo Lighthouse | 695 KB | 856 KB (inclui o motion, baixado depois do LCP) |
+| Auditoria responsiva | 0 problemas | 0 problemas em full, reduced, paused, estático e WebKit + full |

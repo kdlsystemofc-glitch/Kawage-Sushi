@@ -9,6 +9,7 @@ Contrato de marcação (ver DESIGN.md §4.6):
 
 Uso:
   python tests/fita/verificar_empilhamento.py [arquivo.html ...]   (padrão: site/index.html)
+  python tests/fita/verificar_empilhamento.py --motion            (carrega o motion antes de verificar)
 Sai com código 1 se qualquer verificação falhar, em qualquer viewport.
 """
 
@@ -111,7 +112,7 @@ VERIFICAR_JS = r"""
 """
 
 
-def verificar(arquivos):
+def verificar(arquivos, motion=False):
     falhou = False
     with sync_playwright() as p:
         navegador = p.chromium.launch()
@@ -120,6 +121,9 @@ def verificar(arquivos):
             for nome, (w, h) in VIEWPORTS.items():
                 pagina = navegador.new_page(viewport={"width": w, "height": h})
                 pagina.goto(url)
+                if motion and "fixtures" not in arquivo:
+                    pagina.keyboard.press("Shift")  # dispara o carregador do motion
+                    pagina.wait_for_function("document.documentElement.dataset.motionReady === 'true'", timeout=12000)
                 r = pagina.evaluate(VERIFICAR_JS)
                 pagina.close()
                 estado = "FALHOU" if r["erros"] else "ok"
@@ -135,9 +139,10 @@ def verificar(arquivos):
 
 if __name__ == "__main__":
     sys.stdout.reconfigure(encoding="utf-8")
-    alvos = sys.argv[1:] or ["site/index.html"]
+    motion = "--motion" in sys.argv
+    alvos = [a for a in sys.argv[1:] if a != "--motion"] or ["site/index.html"]
     faltando = [a for a in alvos if not Path(a).exists()]
     if faltando:
         print(f"arquivo não encontrado: {', '.join(faltando)}")
         sys.exit(2)
-    sys.exit(1 if verificar(alvos) else 0)
+    sys.exit(1 if verificar(alvos, motion) else 0)

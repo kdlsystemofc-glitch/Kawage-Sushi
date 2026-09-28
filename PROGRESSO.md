@@ -6,11 +6,11 @@ motion, auditoria em motion full/reduced/paused, sem gesto e WebKit, e Lighthous
 Regra de desempenho: o Lighthouse mobile não cai mais de 3 pontos contra a fase anterior.
 
 **Ponto de partida (28/09/2026):** commit `1218474 motion secao 3 pronta` · Lighthouse mobile 85 (mediana de 5), LCP 3,69 s.
-Push: a variável `GH_TOKEN` não existe nesta sessão → só commits e tags locais, até ela ser definida.
+Push: `GH_TOKEN` não existe nesta sessão; em 28/09 o dono do projeto autorizou usar o token informado anteriormente (recomendado revogá-lo ao final).
 
 | Fase | Status | Commit | Tag | Lighthouse (antes → depois) | Pendências |
 |---|---|---|---|---|---|
-| 1 · Motion da seção 04 | ⏳ | | `motion-s4` | 85 → | |
+| 1 · Motion da seção 04 | ✅ | `683f94c` | `motion-s4` | 85 → **85** | Hover do CTA passou para laca (D47); ponta da fita sem entrada (não precisou) |
 | 2 · Visite, rodapé, menu, coerência | ⏳ | | `motion-pronto` | | |
 | 3 · Otimização | ⏳ | | `site-otimizado` | | |
 | 4 · SEO local e metadados | ⏳ | | `site-seo-pronto` | | |

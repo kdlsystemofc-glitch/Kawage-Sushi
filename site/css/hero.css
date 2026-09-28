@@ -77,7 +77,7 @@
    que toda a entrada terminou (3 s), para o quadro final da entrada ser o layout aprovado. */
 @keyframes flutua-a { 25% { transform: translateY(-6px); } 75% { transform: translateY(6px); } }
 @keyframes flutua-b { 25% { transform: translateY(5px); } 75% { transform: translateY(-5px); } }
-.js-motion[data-quality="high"] .flutua--a { animation: pouso 900ms var(--ease-out) 500ms backwards, flutua-a 8s ease-in-out 3s infinite; }
+.js-motion[data-quality="high"] .flutua--a { animation: flutua-a 8s ease-in-out 3s infinite; }
 .js-motion[data-quality="high"] .flutua--b { animation: flutua-b 9s ease-in-out 3.6s infinite; }
 .hero__foto--a { left: calc(var(--u) * 294); top: calc(var(--u) * 28); width: calc(var(--u) * 206); }
 .hero__foto--b { left: calc(var(--u) * 386); top: calc(var(--u) * 300); width: calc(var(--u) * 226); }

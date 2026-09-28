@@ -204,7 +204,11 @@ for (const [w, h] of [[1440, 900], [390, 844]]) {
   // fora da tela: flutuação pausada (data-loop + IntersectionObserver)
   await page.evaluate(() => motion.scrollTo("#visite", { imediato: true }));
   await page.waitForTimeout(500);
-  ok((await flutua()).estado === "paused", "foto A fora da tela: flutuação pausada");
+  // fora da tela o loop é removido (não pausado): libera a camada do compositor (D43)
+  ok((await flutua()) === undefined, "foto A fora da tela: flutuação removida (sem camada presa no compositor)");
+  await page.evaluate(() => motion.scrollTo("#hero", { imediato: true }));
+  await page.waitForTimeout(500);
+  ok((await flutua())?.estado === "running", "foto A de volta à tela: flutuação volta a rodar");
   // botões: transição de 180 ms em cor/opacidade; o contorno de foco não entra na transição
   const tr = await page.evaluate(() => { const s = getComputedStyle(document.querySelector(".cabecalho__menu .pilula")); return { p: s.transitionProperty, d: s.transitionDuration }; });
   ok(/background-color/.test(tr.p) && !/outline|all/.test(tr.p) && tr.d.split(",").every((d) => d.trim() === "0.18s"), `botões: transição de 180 ms sem o contorno de foco (${tr.p} · ${tr.d})`);

@@ -534,3 +534,33 @@ Quadros e vídeos: `screenshots/motion/` (fora do git).
 
 As 2 tarefas longas da carga (~60 ms em 1440; ~150 ms em 390 com CPU 4×) existem também sem motion: são da análise
 do HTML com a fita inline (P4 abaixo).
+
+### Motion da seção 03 — grelhados + wordmark escuro (28/09/2026)
+
+Arquivos: `css/grelhados.css` (pouso, flutuação, brilho), `css/base.css` (pendentes do tipo "pouso", loops fora da
+tela), `js/motion/core.js` (grupos de revelação, tipo "pouso", parallax 2D com `will-change` só na rolagem),
+`scripts/build_fita.mjs` (fita mais larga sobre o "A"). Testes: `scripts/test-motion-sec3.mjs` (em
+`npm run test:motion`). Diagnóstico: `scripts/camadas.mjs`, `scripts/camadas-eliminar.mjs`, `scripts/trace-rolagem.mjs`.
+Custo: `node scripts/medir-motion.mjs custo3`.
+
+| # | Decisão | Por quê |
+|---|---|---|
+| **D38** | **Revelação em grupo** (`data-reveal-grupo`): o grupo inteiro dispara quando o 1º membro atinge 35 % de visibilidade, cada um com o próprio `data-reveal-delay`. Grupo "grelhados": wordmark escuro (fade + 24 px, 900 ms, `--ease-out`) e, 300 ms depois, a chapa. Grupo "grelhados-texto": sobretítulo, título e corpo (16 px + fade, 600 ms, 120 ms entre eles). Como no hero (D34), só anima o que estava abaixo da dobra: em 768×1024 a seção já aparece ao carregar e fica estática | "A chapa começa 300 ms depois do wordmark" exige um gatilho comum |
+| **D39** | **Chapa:** camada com parallax (×0,07, teto 24 px, repouso = seção no topo) → `.grelhados__foto-pousa` com `data-reveal="pouso"` (48 px + 3° → repouso, 1.000 ms, **sem fade**: pousa na fita) → imagem com flutuação (±5 px, 9 s, só `high`, só na tela, começando 1,5 s depois do pouso — o seletor depende de `data-revealed`) | Três movimentos em `transform` sem conflito, só em folhas |
+| **D40** | **Brilho de brasa** (`.grelhados__brasa`, token `--brasa: #E0782E`): gradiente radial centrado na chapa, entre a fita e a chapa (aquece a fita e a pedra sob o prato). **Só com motion** (o estático aprovado não tem). `high`: `opacity` 0,10 ↔ 0,22 em 5 s; `low`: fixo em 0,16; `reduced`/sem JS: não existe. A caixa termina antes da coluna de texto e uma máscara estática apaga o lado direito: contraste do corpo 4,6:1 no pico (igual ao estático). Efeito medido no pico: até 39/255 em ~6,7 % da tela (1440) | Visível, mas discreto; nunca encosta no texto |
+| **D41** | **Vapor: NÃO implementado.** Protótipo medido (3 fiapos de gradiente, só `transform`/`opacity`, 7 s): custo nulo (0 quadros descartados, 0 tarefas longas em 1440 e em 390 @3× CPU 4×). Recusado pelo visual: discreto a ponto de sumir na pedra; visível o bastante, vira "fumaça de banco de imagem" sobre uma foto real vista de cima e sem vapor próprio — e o §1.1 (item 13) já proíbe recriar fumaça "nem em CSS" | Coerência com a decisão de conteúdo |
+| **D42** | **Parallax:** `translate` 2D (`force3D: false`) e `will-change` **só enquanto a página rola**; parado por 200 ms, sai o `will-change` e, no repouso (y = 0), o próprio `transform`. Um `translate3d` parado mantinha a camada no compositor | Estado de repouso desenhado exatamente como o estático |
+| **D43** | **Loops fora da tela são removidos (`animation: none`), não pausados, e só os marcados com `.loop`.** Defeito encontrado: a regra antiga pausava *todas* as animações dentro de `[data-loop]` — se a pessoa rolasse antes de a foto A terminar de pousar (1,4 s), ela congelava fora do lugar, presa numa camada do compositor, e arrastava por sobreposição o texto das seções abaixo. A flutuação da foto A foi para um elemento próprio (`.hero__foto-flutua`). A pausa manual e a aba oculta continuam com `animation-play-state` (congela e retoma de onde parou) | Entrada nunca presa; camadas liberadas fora da tela |
+| **D44** | **Antialiasing com loops ativos (limitação aceita):** enquanto brilho e flutuações rodam em `high`, o Chrome promove por sobreposição o texto vizinho a camadas próprias e o desenha em tons de cinza em vez de antialiasing subpixel. Só se nota em **Windows/Linux** (macOS, iOS e Android não usam subpixel). O teste compara o estado final da entrada em `high` por luminância com desfoque de 1 px (insensível ao modo de antialiasing, sensível a qualquer deslocamento): 0,02 %; em `low`, pixel a pixel: 0,00 % | Consequência direta dos loops pedidos |
+| **D45** | **A fita cobre 100 % do "A" do wordmark escuro, em todas as larguras e quadros.** A medição nova (pixels da letra × cena com e sem a fita) mostrou que o estático aprovado deixava à mostra o pé direito do "A" em 1440/768 (encostado na fita, escurecido pela sombra dela) e as pontas das serifas em 390 — a verificação antiga exigia só 60 % do miolo da letra. Fita alargada na base do "A" (desenho largo: pontos y 690–772; celular: y 932–1004) | Pedido: nenhum quadro com a perna da letra à mostra |
+
+**Custo medido (laboratório, Chromium headless; não é aparelho real)**
+
+| Medição | Resultado |
+|---|---|
+| 10 s parado na seção 03 + rolagem da 02 até a 04, 1440 | sem motion 60 / 59,6 fps · high 60 / 60 · high + vapor (protótipo) 60 / 59,6 · low 59,9 / 59,7; 0 descartados, 0 tarefas longas em todos |
+| Idem, 390 @3× CPU 4× | sem motion 60,1 / 59,8 · low 60 / 60 · high + vapor 60 / 59,8; 0 descartados, 0 tarefas longas |
+| Rolagem do topo até a seção 03, 1440 | 1–2 tarefas de 43–77 ms **uma vez por carga**, no disparo da coreografia (o Chrome rasteriza a área nova e recalcula as camadas; no `high`, dentro do passo de rolagem do Lenis). Não recorrente; ausente no celular. Testado e **desfeito**: Lenis só em `high` (não removeu a tarefa, só mudou de lugar) |
+| Lighthouse mobile, mediana de 5 | **85** (antes 86); LCP 3,69 s (antes 3,68 s); TBT 0; CLS 0 |
+| Estado final da entrada × estático | 1440: 0,02 % (luminância; D44) · 390: 0,00 % (pixel a pixel) |
+| "A" coberto | 0 pixel da letra à mostra em 0/300/900/1500/2600 ms, em 1440, 768 e 390 |

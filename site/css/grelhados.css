@@ -30,8 +30,41 @@
   left: calc(var(--u) * 204);
   top: calc(var(--u) * 92);
   width: calc(var(--u) * 270);
-  filter: var(--sombra-objeto);
 }
+.grelhados__foto-img { width: 100%; filter: var(--sombra-objeto); } /* a sombra move junto com a imagem */
+
+/* ── motion (DESIGN.md §9, D38–D41). Só transform/opacity, só nas camadas-folha. ── */
+.grelhados__wordmark { --reveal-y: 24px; --reveal-dur: 900ms; }
+.grelhados__foto-pousa { --reveal-y: 48px; --reveal-rot: 3deg; --reveal-dur: 1000ms; }
+.grelhados__texto [data-reveal] { --reveal-y: 16px; }
+
+/* Flutuação da chapa: só em "high", só com a chapa na tela (data-loop) e só depois do pouso
+   (data-revealed), com 1,5 s de folga para o quadro final da entrada ser o layout aprovado. */
+@keyframes flutua-c { 25% { transform: translateY(-5px); } 75% { transform: translateY(5px); } }
+.js-motion[data-quality="high"] [data-revealed] > .flutua--c { animation: flutua-c 9s ease-in-out 1.5s infinite; }
+
+/* Brilho de brasa (D40): gradiente radial quente atrás da chapa e à frente da fita (vem antes da chapa
+   no DOM, mesma camada: a chapa fica por cima). Não existe sem
+   motion (o estático aprovado não tem). "high": pulsa só na opacity (0,10 ↔ 0,22, 5 s); "low": fixo. */
+.grelhados__brasa {
+  position: absolute;
+  z-index: var(--z-sobre);
+  /* Halo centrado na chapa (x 339, y 181), com raios ~1,6 × o prato: o núcleo fica sob o prato (opaco) e
+     o anel quente aparece em volta. A caixa termina ANTES da coluna de texto (x 464 < 467): nada do brilho
+     encosta no texto — nem no contraste nem no desenho (uma camada do compositor sobreposta ao texto o
+     faria perder o antialiasing subpixel). A máscara apaga o lado direito antes da borda da caixa. */
+  left: calc(var(--u) * 124);
+  top: calc(var(--u) * 31);
+  width: calc(var(--u) * 340);
+  height: calc(var(--u) * 300);
+  background: radial-gradient(calc(var(--u) * 215) calc(var(--u) * 150) at 63% 50%, var(--brasa) 45%, transparent);
+  mask-image: linear-gradient(to right, #000 55%, transparent 100%);
+  opacity: 0;
+  pointer-events: none;
+}
+.js-motion .grelhados__brasa { opacity: 0.16; }
+@keyframes brasa { 0%, 100% { opacity: 0.1; } 50% { opacity: 0.22; } }
+.js-motion[data-quality="high"] .grelhados__brasa { animation: brasa 5s ease-in-out infinite; }
 
 /* Texto alinhado à direita, com a borda direita do mockup (x 657). */
 .grelhados__texto {
@@ -67,6 +100,7 @@
   .grelhados { height: calc(var(--u) * 480); }
   .grelhados__wordmark { top: calc(var(--u) * 14); font-size: calc(var(--u) * 69); }
   .grelhados__foto { left: calc(var(--u) * 50); top: calc(var(--u) * 100); width: calc(var(--u) * 290); }
+  .grelhados__brasa { left: 0; top: calc(var(--u) * 46); width: calc(var(--u) * 390); height: calc(var(--u) * 300); mask-image: none; }
   .grelhados__texto { right: calc(var(--u) * 60); top: calc(var(--u) * 348); width: calc(var(--u) * 270); gap: calc(var(--u) * 8); }
 }
 

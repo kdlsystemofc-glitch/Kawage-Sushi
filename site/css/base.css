@@ -104,7 +104,9 @@ body {
 
 /* revelação declarativa (data-reveal): estado inicial */
 /* só os marcados como pendentes (abaixo da dobra ao carregar, D34) começam escondidos */
-.js-motion [data-reveal].reveal-pendente:not([data-revealed]) { opacity: 0; }
+.js-motion [data-reveal]:not([data-reveal="pouso"]).reveal-pendente:not([data-revealed]) { opacity: 0; }
+/* pouso: não some, só se desloca (como a foto A do hero) */
+.js-motion [data-reveal="pouso"].reveal-pendente:not([data-revealed]) { transform: translateY(var(--reveal-y)) rotate(var(--reveal-rot, 0deg)); }
 .js-motion [data-reveal="up"].reveal-pendente:not([data-revealed]) { transform: translateY(var(--reveal-y)); }
 .js-motion [data-reveal="scale"].reveal-pendente:not([data-revealed]) { transform: scale(var(--reveal-scale)); }
 
@@ -125,12 +127,16 @@ body {
   animation-play-state: paused !important;
 }
 
-/* loops CSS fora da tela (data-loop + IntersectionObserver em core.js) */
-[data-loop][data-offscreen],
-[data-loop][data-offscreen] *,
-[data-loop][data-offscreen] *::before,
-[data-loop][data-offscreen] *::after {
-  animation-play-state: paused !important;
+/* Loops CSS fora da tela (data-loop + IntersectionObserver em core.js), D43:
+   - só as animações marcadas com .loop — uma ENTRADA no mesmo elemento não pode parar no meio (ficaria
+     fora do lugar e presa numa camada do compositor se a pessoa rolasse antes de ela terminar);
+   - REMOVIDAS, não pausadas: um loop pausado continua numa camada do compositor e, por sobreposição,
+     promove o conteúdo da página abaixo (o texto perde o antialiasing subpixel). Fora da tela não há
+     o que congelar; ao voltar, o loop recomeça do início (com o atraso dele), sem salto visível.
+   A pausa manual e a aba oculta seguem com animation-play-state (congela e retoma de onde parou). */
+[data-loop][data-offscreen].loop,
+[data-loop][data-offscreen] .loop {
+  animation: none !important;
 }
 
 /* Lenis (equivalente ao lenis.css). scroll-behavior: smooth (reset.css) faria cada passo do Lenis

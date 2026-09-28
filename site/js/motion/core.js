@@ -73,10 +73,11 @@
     let emMontagem = null; // registro cujo setup está rodando (para motion.loop achar o dono)
     let rolando = false;
     let fimRolagem = 0;
+    const aoParar = new Set(); // chamados quando a rolagem fica 200 ms parada
     addEventListener("scroll", () => {
       rolando = true;
       clearTimeout(fimRolagem);
-      fimRolagem = setTimeout(() => { rolando = false; }, 200);
+      fimRolagem = setTimeout(() => { rolando = false; aoParar.forEach((f) => f()); }, 200);
     }, { passive: true });
     let iniciado = false; // ver "início" no fim: nada é montado antes de a rolagem parar
 
@@ -272,7 +273,7 @@
       const duracao = proprio ? (proprio.endsWith("ms") ? parseFloat(proprio) / 1000 : parseFloat(proprio)) : dur("--t-mid");
       const t = gsap.to(el, {
         opacity: 1,
-        ...(cheio && { y: 0, scale: 1 }),
+        ...(cheio && { y: 0, scale: 1, rotation: 0 }),
         duration: cheio ? duracao : dur("--t-fade"),
         ease: cheio ? api.ease : "none",
         delay: cheio ? (Number(el.dataset.revealDelay) || 0) / 1000 : 0,
@@ -288,6 +289,13 @@
         const escondidos = []; // "reduced": opacity 0 posta por aqui, desfeita na limpeza
         const limpezas = [() => escondidos.forEach((el) => { if (!el.hasAttribute("data-revealed")) limparEstilo(el, "opacity"); })];
         const limpar = () => limpezas.forEach((f) => f());
+        const grupos = new Map();
+        const disparar = (gatilho, membros) => ScrollTrigger.create({
+          trigger: gatilho,
+          start: () => `top+=${Math.min(gatilho.offsetHeight, innerHeight) * fracaoReveal()} bottom`,
+          once: true,
+          onEnter: () => membros.forEach(revelar),
+        });
         for (const el of document.querySelectorAll("[data-reveal]:not([data-revealed])")) {
           const r = el.getBoundingClientRect();
           if (r.bottom <= 0) { concluir(el); continue; } // já ficou para trás (link direto a uma seção)
@@ -299,13 +307,13 @@
             el.style.opacity = "0";
             escondidos.push(el);
           }
-          ScrollTrigger.create({
-            trigger: el,
-            start: () => `top+=${Math.min(el.offsetHeight, innerHeight) * fracaoReveal()} bottom`,
-            once: true,
-            onEnter: () => revelar(el),
-          });
+          // data-reveal-grupo: o grupo inteiro dispara junto, quando o 1º membro atinge --reveal-at
+          // (cada um com o próprio data-reveal-delay); sem grupo, cada elemento dispara sozinho
+          const g = el.dataset.revealGrupo;
+          if (g) { (grupos.get(g) || grupos.set(g, []).get(g)).push(el); continue; }
+          disparar(el, [el]);
         }
+        for (const membros of grupos.values()) disparar(membros[0], membros);
 
         for (const el of document.querySelectorAll("[data-loop]")) loops.observar(el);
 
@@ -317,8 +325,19 @@
           const teto = parseFloat(el.dataset.parallaxMax) || Infinity; // deslocamento máximo em px
           const noTopo = el.dataset.parallaxRepouso === "topo"; // repouso = página no topo (1ª tela)
           const secao = el.closest("[data-secao], section") || el;
+          // translate 2D (force3D: false): parado fora do repouso, um translate3d manteria o elemento numa
+          // camada do compositor e, por sobreposição, arrastaria o texto vizinho junto (sem antialiasing
+          // subpixel). Rolando, quem promove é o will-change.
+          gsap.set(el, { force3D: false });
           const setY = gsap.quickSetter(el, "y", "px");
-          const y = (v) => setY(gsap.utils.clamp(-teto, teto, v));
+          let atual = 0;
+          // will-change só enquanto a página rola (D42): parado, o elemento sai da camada própria do
+          // compositor e, no repouso (y = 0), fica sem transform — desenhado exatamente como no estático
+          const y = (v) => {
+            atual = gsap.utils.clamp(-teto, teto, v);
+            if (rolando) el.style.willChange = "transform";
+            setY(atual);
+          };
           let repouso = 0; // scroll em que o elemento está na posição do layout estático
           const posicionar = (st) => y(fator * (gsap.utils.clamp(st.start, st.end, st.scroll()) - repouso));
           const st = ScrollTrigger.create({
@@ -327,11 +346,17 @@
             end: "bottom top",
             onRefresh: (self) => { repouso = noTopo ? 0 : self.end - secao.offsetHeight; posicionar(self); },
             onUpdate: posicionar,
-            onToggle: (self) => { el.style.willChange = self.isActive ? "transform" : ""; },
+            onToggle: (self) => { if (!self.isActive) el.style.willChange = ""; },
           });
           repouso = noTopo ? 0 : st.end - secao.offsetHeight;
           posicionar(st);
-          return { el, st, y, posicionar };
+          const descansar = () => {
+            el.style.willChange = "";
+            if (Math.abs(atual) < 0.5) limparEstilo(el, "transform", "translate", "rotate", "scale");
+          };
+          descansar();
+          aoParar.add(descansar);
+          return { el, st, y, posicionar, descansar };
         });
         const alternar = (m) => {
           for (const { el, st, y, posicionar } of itens) {
@@ -341,7 +366,7 @@
           }
         };
         if (modo === "paused") alternar(modo);
-        limpezas.push(api.on("mode", alternar), () => itens.forEach(({ el }) => limparEstilo(el, "transform", "will-change", "translate", "rotate", "scale")));
+        limpezas.push(api.on("mode", alternar), () => itens.forEach(({ el, descansar }) => { aoParar.delete(descansar); limparEstilo(el, "transform", "will-change", "translate", "rotate", "scale"); }));
         return limpar;
       },
     };

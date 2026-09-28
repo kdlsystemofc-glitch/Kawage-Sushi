@@ -27,7 +27,8 @@
   letter-spacing: 0.08em;
   white-space: nowrap;
 }
-.pilula--cta:hover { background: var(--tinta); color: var(--creme); }
+/* hover em laca, como o MENU e a pausa: a pílula continua visível nos dois fundos (pedra e creme) */
+.pilula--cta:hover { background: var(--laca); color: var(--creme-luz); }
 
 .visite__conteudo {
   width: var(--palco);

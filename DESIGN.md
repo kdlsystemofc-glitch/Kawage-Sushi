@@ -564,3 +564,14 @@ Custo: `node scripts/medir-motion.mjs custo3`.
 | Lighthouse mobile, mediana de 5 | **85** (antes 86); LCP 3,69 s (antes 3,68 s); TBT 0; CLS 0 |
 | Estado final da entrada × estático | 1440: 0,02 % (luminância; D44) · 390: 0,00 % (pixel a pixel) |
 | "A" coberto | 0 pixel da letra à mostra em 0/300/900/1500/2600 ms, em 1440, 768 e 390 |
+
+### Motion da seção 04 — rodízio, shimeji, nota e CTA (fase 1, 28/09/2026)
+
+| # | Decisão | Por quê |
+|---|---|---|
+| **D46** | **Texto** (título, corpo, pílula da nota): grupo de revelação "rodizio-texto", 16 px + fade, 600 ms, 120 ms entre eles. **Shimeji:** camada com parallax (×0,07, teto 24 px, nunca sobre o texto) → `data-reveal="pouso"` (40 px + −3° → repouso, 900 ms, sem fade) → imagem com flutuação (±5 px, 9 s, só `high`, só na tela, 1,5 s depois do pouso). A flutuação começa **descendo**; a da chapa (seção 03) começa subindo: mesmo período, fases opostas. **Ponta da fita: sem entrada** (não precisou; a fita não se move). Em 768×1024 a seção aparece ao carregar e fica estática (D34) | Pedido da fase 1 |
+| **D47** | **CTA "Ligar para o Kawage":** transição de 180 ms (cor), contorno de foco imediato. O hover passou de tinta para **laca** (como MENU e pausa): em tinta, a metade da pílula sobre a pedra sumia (1,1:1); em laca fica 2:1 contra a pedra e 8:1 contra o creme, texto 8,6:1. Em repouso: texto 15,1:1, pílula 16:1 contra a pedra, borda 15,1:1 contra o creme | Contraste nos dois fundos da divisa |
+
+Testes: `scripts/test-motion-sec4.mjs` (em `npm run test:motion`): quadros a partir do disparo, empilhamento e "A" coberto em cada
+quadro, estado final × estático (1440: 0,00 % por luminância; 390: 0,00 % pixel a pixel), contraste do texto (título 13,9,
+corpo 7,3–7,8, total da nota 4,6–5,1), navegação (menu → Visite e volta, normal e rápido), modos, CTA e vídeos.

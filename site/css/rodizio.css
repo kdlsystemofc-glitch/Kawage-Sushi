@@ -70,8 +70,16 @@
   left: calc(var(--u) * 390);
   top: calc(var(--u) * 40);
   width: calc(var(--u) * 182);
-  filter: var(--sombra-objeto);
 }
+.rodizio__foto-img { width: 100%; filter: var(--sombra-objeto); } /* a sombra move junto com a imagem */
+
+/* ── motion (DESIGN.md §9, D46). Só transform/opacity, só nas camadas-folha. ── */
+.rodizio__texto [data-reveal] { --reveal-y: 16px; }
+.rodizio__foto-pousa { --reveal-y: 40px; --reveal-rot: -3deg; --reveal-dur: 900ms; }
+/* Flutuação: só "high", só na tela, 1,5 s depois do pouso. Começa DESCENDO (a chapa da seção 03 começa
+   subindo): mesmo período, fases opostas, nunca em uníssono. */
+@keyframes flutua-d { 25% { transform: translateY(5px); } 75% { transform: translateY(-5px); } }
+.js-motion[data-quality="high"] [data-revealed] > .flutua--d { animation: flutua-d 9s ease-in-out 1.5s infinite; }
 
 /* ── celular: texto → shimeji (D21) ── */
 @media (max-width: 47.99rem) {

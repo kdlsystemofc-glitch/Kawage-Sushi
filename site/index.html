@@ -227,22 +227,27 @@
       <section class="rodizio" id="rodizio" data-secao="rodizio" aria-labelledby="rodizio-titulo">
         <div class="palco">
           <div class="rodizio__texto" data-camada="texto">
-            <h2 class="rodizio__titulo" id="rodizio-titulo"><span>Rodízio e</span> <span>à la carte</span></h2>
-            <p class="rodizio__corpo">Os mais pedidos da casa: sushi e sashimi variados e shimeji.</p>
+            <h2 class="rodizio__titulo" id="rodizio-titulo" data-reveal="up" data-reveal-grupo="rodizio-texto"><span>Rodízio e</span> <span>à la carte</span></h2>
+            <p class="rodizio__corpo" data-reveal="up" data-reveal-grupo="rodizio-texto" data-reveal-delay="120">Os mais pedidos da casa: sushi e sashimi variados e shimeji.</p>
             <!-- PENDENTE D7: "Bebida e sobremesa inclusas." só entra com confirmação do cliente. -->
             <!-- Nota do Google (CLIENTE-bruto.md, set/2026): atualizar antes de publicar. -->
-            <p class="nota">
+            <p class="nota" data-reveal="up" data-reveal-grupo="rodizio-texto" data-reveal-delay="240">
               <span class="nota__valor">4,5 <span aria-hidden="true">★</span></span>
               <span class="nota__total">2.851 avaliações no Google</span>
               <span class="visualmente-oculto">: nota 4,5 de 5</span>
             </p>
           </div>
 
-          <img class="rodizio__foto" data-camada="sobre-a-fita"
+          <!-- Shimeji (D46): camada com parallax > pouso > imagem com flutuação. -->
+          <div class="rodizio__foto" data-camada="sobre-a-fita" data-parallax="0.07" data-parallax-max="24" data-loop>
+          <div class="rodizio__foto-pousa" data-reveal="pouso">
+          <img class="rodizio__foto-img loop flutua--d"
                src="assets/shimeji-chapa-800.webp"
                width="531" height="639"
                alt="Shimeji com cebolinha servido na chapa"
                loading="lazy">
+          </div>
+          </div>
         </div>
       </section>
       </div>

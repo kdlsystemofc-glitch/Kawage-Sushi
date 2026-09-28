@@ -159,6 +159,13 @@ for (const [nome, [W, H]] of telas) {
     }
     if (modo === "texto200") await page.addStyleTag({ content: "html{font-size:200% !important}" });
     await page.evaluate(() => document.fonts.ready);
+    // entradas (CSS) concluídas: a auditoria mede o estado final; loops infinitos ficam como estão
+    await page.evaluate(() => document.getAnimations().forEach((an) => { if (an.effect?.getComputedTiming().iterations !== Infinity) an.finish(); }));
+    // revelações (data-reveal) no estado final: a auditoria mede o layout que o visitante vê
+    await page.evaluate(() => document.querySelectorAll("[data-reveal]").forEach((el) => {
+      el.classList.remove("reveal-pendente"); el.setAttribute("data-revealed", "");
+      ["opacity", "transform", "translate", "rotate", "scale"].forEach((p) => el.style.removeProperty(p));
+    }));
     await page.waitForTimeout(150);
 
     const m = await page.evaluate(MEDIR);
@@ -169,7 +176,7 @@ for (const [nome, [W, H]] of telas) {
     // screenshot normal + um sem texto para medir a fita atrás do texto
     const arq = join(OUT, `${nome}-${modo}${WEBKIT ? "-webkit" : ""}${MOTION ? "-motion-" + MOTION : ""}.png`);
     const buf = await page.screenshot({ path: arq, fullPage: true });
-    await page.addStyleTag({ content: "*{color:transparent!important;text-shadow:none!important;text-decoration-color:transparent!important} .pilula,.nota__valor{background:transparent!important;border-color:transparent!important} .pilula svg{visibility:hidden}" });
+    await page.addStyleTag({ content: "*{color:transparent!important;text-shadow:none!important;text-decoration-color:transparent!important;transition:none!important} .pilula,.nota__valor{background:transparent!important;border-color:transparent!important} .pilula svg{visibility:hidden}" });
     const semTexto = png(await page.screenshot({ fullPage: true }));
     const dpr = modo === "zoom200" ? 2 : 1;
     for (const t of m.textos) {

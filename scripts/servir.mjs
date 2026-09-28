@@ -1,11 +1,11 @@
-// Servidor estático de site/ (para Lighthouse e testes manuais). Uso: node scripts/servir.mjs [porta]
+// Servidor estático de site/ (para Lighthouse e testes manuais). Uso: node scripts/servir.mjs [porta] [pasta]
 // Serve com gzip quando o navegador aceita, como uma hospedagem comum faria.
 import { createServer } from "node:http";
 import { readFile } from "node:fs/promises";
 import { extname, join, normalize, resolve } from "node:path";
 import { gzipSync } from "node:zlib";
 
-const ROOT = resolve("site");
+const ROOT = resolve(process.argv[3] || "site");
 const PORTA = Number(process.argv[2]) || 4173;
 const TYPES = {
   ".html": "text/html; charset=utf-8", ".css": "text/css; charset=utf-8", ".js": "text/javascript",

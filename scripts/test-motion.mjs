@@ -20,7 +20,11 @@ async function abrir({ reduzido = false, quality = null, largura = 1440, injetar
   if (injetar) {
     // os utilitários ainda não são usados por nenhuma seção: o teste marca elementos abaixo da 1ª tela
     await page.addInitScript(() => document.addEventListener("DOMContentLoaded", () => {
-      document.querySelectorAll(".visite__bloco").forEach((el) => el.setAttribute("data-reveal", "up"));
+      // como o script do fim do <body> faria: pendente só o que está abaixo da dobra
+      document.querySelectorAll(".visite__bloco").forEach((el) => {
+        el.setAttribute("data-reveal", "up");
+        if (document.documentElement.classList.contains("js-motion") && el.getBoundingClientRect().top >= innerHeight) el.classList.add("reveal-pendente");
+      });
       document.querySelector(".rodizio__foto").setAttribute("data-parallax", "0.1");
     }));
   }

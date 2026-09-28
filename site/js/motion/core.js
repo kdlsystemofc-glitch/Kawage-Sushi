@@ -260,16 +260,20 @@
     const limparEstilo = (el, ...props) => props.forEach((p) => el.style.removeProperty(p));
     const concluir = (el) => {
       el.setAttribute("data-revealed", "");
+      el.classList.remove("reveal-pendente");
       limparEstilo(el, "opacity", "transform", "will-change", "translate", "rotate", "scale");
     };
     const revelar = (el) => {
       if (el.hasAttribute("data-revealed")) return;
       if (modo === "paused") return concluir(el);
       const cheio = base === "full";
+      // duração por elemento (--reveal-dur), senão --t-mid
+      const proprio = getComputedStyle(el).getPropertyValue("--reveal-dur").trim();
+      const duracao = proprio ? (proprio.endsWith("ms") ? parseFloat(proprio) / 1000 : parseFloat(proprio)) : dur("--t-mid");
       const t = gsap.to(el, {
         opacity: 1,
         ...(cheio && { y: 0, scale: 1 }),
-        duration: cheio ? dur("--t-mid") : dur("--t-fade"),
+        duration: cheio ? duracao : dur("--t-fade"),
         ease: cheio ? api.ease : "none",
         delay: cheio ? (Number(el.dataset.revealDelay) || 0) / 1000 : 0,
         onStart: () => { el.style.willChange = cheio ? "transform, opacity" : "opacity"; },
@@ -287,6 +291,8 @@
         for (const el of document.querySelectorAll("[data-reveal]:not([data-revealed])")) {
           const r = el.getBoundingClientRect();
           if (r.bottom <= 0) { concluir(el); continue; } // já ficou para trás (link direto a uma seção)
+          // full: só anima o que ficou pendente (abaixo da dobra ao carregar, D34); o resto já está à mostra
+          if (base === "full" && !el.classList.contains("reveal-pendente")) { concluir(el); continue; }
           if (base === "reduced") {
             // sem estado escondido pré-pintura em "reduced": só some quem ainda está abaixo da tela
             if (r.top < innerHeight) { concluir(el); continue; }
@@ -308,19 +314,22 @@
         if (base !== "full" || quality === "low") return limpar;
         const itens = [...document.querySelectorAll("[data-parallax]")].map((el) => {
           const fator = parseFloat(el.dataset.parallax) || 0;
+          const teto = parseFloat(el.dataset.parallaxMax) || Infinity; // deslocamento máximo em px
+          const noTopo = el.dataset.parallaxRepouso === "topo"; // repouso = página no topo (1ª tela)
           const secao = el.closest("[data-secao], section") || el;
-          const y = gsap.quickSetter(el, "y", "px");
-          let repouso = 0; // scroll em que o topo da seção encosta no topo da tela
+          const setY = gsap.quickSetter(el, "y", "px");
+          const y = (v) => setY(gsap.utils.clamp(-teto, teto, v));
+          let repouso = 0; // scroll em que o elemento está na posição do layout estático
           const posicionar = (st) => y(fator * (gsap.utils.clamp(st.start, st.end, st.scroll()) - repouso));
           const st = ScrollTrigger.create({
             trigger: secao,
             start: "top bottom",
             end: "bottom top",
-            onRefresh: (self) => { repouso = self.end - secao.offsetHeight; posicionar(self); },
+            onRefresh: (self) => { repouso = noTopo ? 0 : self.end - secao.offsetHeight; posicionar(self); },
             onUpdate: posicionar,
             onToggle: (self) => { el.style.willChange = self.isActive ? "transform" : ""; },
           });
-          repouso = st.end - secao.offsetHeight;
+          repouso = noTopo ? 0 : st.end - secao.offsetHeight;
           posicionar(st);
           return { el, st, y, posicionar };
         });

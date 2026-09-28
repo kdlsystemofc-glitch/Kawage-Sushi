@@ -16,6 +16,11 @@
   <script>
     (function (h, n) {
       var q = /[?&]quality=(low|high)(?:&|$)/.exec(location.search);
+      // ?motion=off: site estático com JS (comparação de custo nos testes)
+      if (/[?&]motion=off(?:&|$)/.test(location.search)) { h.setAttribute("data-motion-ready", "failed"); return; }
+      h.classList.add("js");
+      // entrada da fita só quando a página abre no topo (D31)
+      if (!scrollY && !location.hash) h.classList.add("entrada-topo");
       h.setAttribute("data-quality", q ? q[1] : n.hardwareConcurrency <= 4 || n.deviceMemory <= 4 ||
         (n.connection && n.connection.saveData) || innerWidth < 768 ? "low" : "high");
       if (!matchMedia("(prefers-reduced-motion: reduce)").matches) h.classList.add("js-motion");
@@ -152,30 +157,38 @@
         <div class="palco">
           <div class="hero__ilha" data-camada="atras-da-fita" aria-hidden="true"></div>
 
-          <img class="hero__foto hero__foto--a" data-camada="sobre-a-fita"
+          <!-- Foto A (D32): a camada recebe o parallax; a imagem, a entrada e a flutuação (CSS). -->
+          <div class="hero__foto hero__foto--a" data-camada="sobre-a-fita" data-parallax="0.06" data-parallax-max="24" data-parallax-repouso="topo" data-loop>
+          <img class="hero__foto-img pousa flutua flutua--a"
                src="assets/hero-salmao-bloco-sal-800.webp"
                srcset="assets/hero-salmao-bloco-sal-800.webp 800w, assets/hero-salmao-bloco-sal-1600.webp 1027w"
                sizes="(max-width: 47.99rem) 66vw, min(28vw, 360px)"
                width="800" height="827"
                alt="Fatias de salmão enroladas sobre um bloco de sal rosa"
                fetchpriority="high">
+          </div>
 
           <div class="hero__texto" data-camada="texto">
-            <p class="sobre">Rodízio e cardápio japonês</p>
-            <h2 class="hero__titulo" id="hero-titulo"><span>A mesa</span> <span>pede mais um</span></h2>
-            <p class="hero__corpo">
+            <p class="sobre" data-reveal="up">Rodízio e cardápio japonês</p>
+            <h2 class="hero__titulo" id="hero-titulo"><span data-reveal="up" data-reveal-delay="120">A mesa</span> <span data-reveal="up" data-reveal-delay="240">pede mais um</span></h2>
+            <p class="hero__corpo" data-reveal="up" data-reveal-delay="360">
               Sushis, sashimis e grelhados de salmão, no rodízio ou no cardápio.
               Para comer aqui, retirar na porta ou receber em casa.
             </p>
           </div>
 
-          <img class="hero__foto hero__foto--b" data-camada="sobre-a-fita"
+          <!-- Foto B (D33): camada com parallax > revelação (GSAP) > imagem com flutuação (CSS). -->
+          <div class="hero__foto hero__foto--b" data-camada="sobre-a-fita" data-parallax="0.08" data-parallax-max="24" data-parallax-repouso="topo" data-loop>
+          <div class="hero__foto-revela" data-reveal="up">
+          <img class="hero__foto-img flutua flutua--b"
                src="assets/sushi-variado-800.webp"
                srcset="assets/sushi-variado-800.webp 800w, assets/sushi-variado-1600.webp 1180w"
                sizes="(max-width: 47.99rem) 72vw, min(31vw, 400px)"
                width="800" height="603"
                alt="Sushis variados: niguiris maçaricados, hossomakis e joes"
                loading="lazy">
+          </div>
+          </div>
         </div>
       </section>
 
@@ -284,7 +297,31 @@
   </footer>
 
   <script>
-    // Menu: só abre/fecha a lista; sem animação nesta etapa.
+    // Revelações (D34): só fica escondido o que está ABAIXO da dobra ao carregar. O que já está na tela
+    // nunca espera o motion (que chega depois do load, D25); e se algo pendente entrar na tela antes
+    // de o motion subir, aparece na hora, sem animação.
+    (function (h) {
+      if (!h.classList.contains("js-motion")) return;
+      var io = "IntersectionObserver" in window && new IntersectionObserver(function (entradas) {
+        entradas.forEach(function (e) {
+          if (!e.isIntersecting || h.getAttribute("data-motion-ready") === "true") return;
+          e.target.classList.remove("reveal-pendente");
+          e.target.setAttribute("data-revealed", "");
+          io.unobserve(e.target);
+        });
+      });
+      // depois da 1ª pintura: medir antes dela forçaria um layout síncrono da página inteira e
+      // atrasaria o LCP. Quem está abaixo da dobra não aparece nesse quadro, então nada pisca.
+      requestAnimationFrame(function () {
+        [].forEach.call(document.querySelectorAll("[data-reveal]"), function (el) {
+          if (el.getBoundingClientRect().top < innerHeight || !io) return;
+          el.classList.add("reveal-pendente");
+          io.observe(el);
+        });
+      });
+    })(document.documentElement);
+
+    // Menu: só abre/fecha a lista.
     const botao = document.querySelector(".cabecalho__menu");
     const menu = document.getElementById("menu");
     botao.addEventListener("click", () => {

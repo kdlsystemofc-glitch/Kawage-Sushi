@@ -438,6 +438,7 @@ wordmark escuro ou cortada no fim da pedra. `--webkit` roda o modo normal no mot
 | P2 | **Fita: borda interna das curvas fechadas** (curva direita do rodízio) forma um pequeno recorte, e as áreas largas mostram uma quadrícula leve de tons | Passada de motion ou revisão visual | Ajustar o gerador (offset com raio mínimo na borda interna; tons em gradiente contínuo por tira em vez de faixas) |
 | P3 | **Zoom só de texto (Firefox "Zoom text only")**: as fontes usam mínimos em px e escala em `--u`, então esse modo não aumenta o texto (o zoom normal do navegador funciona) | Antes de publicar, se o público exigir | Trocar os mínimos para `rem` e deixar os blocos de texto crescerem (a ilha já precisaria acompanhar a altura do texto) |
 | P1 | **Transição creme → pedra do hero** tem bordas retas e abruptas (topo creme e ilha creme cortam a pedra em linhas horizontais e verticais secas) | Passada de motion ou revisão visual futura | Avaliar suavizar a borda com degradê curto ou uma borda com textura (pedra "lascada") em vez do corte reto. Manter a leitura da moldura creme; não virar um degradê longo |
+| P4 | **Tarefas longas na carga** (~150 ms em celular médio simulado) vindas do HTML com a fita inline (~270 KB) | Etapa de otimização | Avaliar a fita em arquivo SVG externo (`<use>` não funciona por `file://`; talvez `<object>`/`<img>` perderia o empilhamento) ou reduzir o número de trechos do gerador |
 
 
 ---
@@ -499,3 +500,37 @@ motion.register((m) => {
 | JS | 0 | 51 KB gzip (160 KB sem compressão), só depois do `load` |
 | Peso total medido pelo Lighthouse | 695 KB | 856 KB (inclui o motion, baixado depois do LCP) |
 | Auditoria responsiva | 0 problemas | 0 problemas em full, reduced, paused, estático e WebKit + full |
+
+### Motion do topo + hero (28/09/2026)
+
+Arquivos: `css/topo.css` (entradas do topo), `css/hero.css` (pouso e flutuação das fotos), `css/base.css`
+(entrada da fita, revelações pendentes, transições de botões), `js/motion/core.js` (parallax com teto e repouso no
+topo, `--reveal-dur`), script do fim do `<body>` (revelações pendentes). Testes: `npm run test:motion`
+(`scripts/test-motion.mjs` + `scripts/test-motion-hero.mjs`), custo: `node scripts/medir-motion.mjs fita|custo`.
+Quadros e vídeos: `screenshots/motion/` (fora do git).
+
+| # | Decisão | Por quê |
+|---|---|---|
+| **D30** | **Entrada do topo em CSS puro** (sob `html.js-motion`, posta no `<head>`): wordmark `opacity` 0 + `translate` 24 px → repouso em 900 ms `--ease-out`; logo e MENU com fade de 600 ms, 300 ms depois. Em `reduced`, as três peças só fazem fade de 200 ms (exceção explícita ao `reset.css`, que zera animações em reduced). A fita continua por cima do **"W"** do wordmark do topo (é o "W" no mockup; o "A" coberto é o do wordmark escuro da seção 03) | Acima da dobra não pode esperar o GSAP (D25) |
+| **D31** | **Entrada da fita: única, só com a página aberta no topo, CSS.** `high`: revelação por `clip-path` de cima para baixo (a janela visível em 1.400 ms, o resto da página no último quadro, fora da tela); `low`: só fade de 1.400 ms (`opacity` fica no compositor; `clip-path` costuma redesenhar o SVG a cada quadro, caro em GPU fraca). A fita **não se move**. **Não há fita "se desenhando" com a rolagem na página inteira:** a fita é um SVG único de ~270 KB com milhares de trechos; revelar pela rolagem exigiria redesenhá-lo (máscara/`clip-path`/`stroke-dashoffset`) a cada quadro de rolagem, sobre a pedra, cujo filtro já é a tarefa de desenho mais cara da página (`motion-baseline.md`). Isso trocaria uma entrada barata por custo contínuo durante toda a rolagem | Medição abaixo |
+| **D32** | **Foto A** (`.hero__foto--a`, LCP): a camada (`data-camada`) recebe o parallax; a imagem interna recebe o pouso (`translate` 40 px + `rotate` −2° → repouso, 900 ms, 500 ms depois do wordmark, **sem opacidade**, para não atrasar o LCP) e a flutuação (±6 px, 8 s, só `high`, só com a foto na tela via `data-loop`, começando aos 3 s, depois de toda a entrada). A sombra (`drop-shadow`) fica na imagem, não na camada: é rasterizada uma vez e só o transform muda | Três movimentos em `transform` na mesma foto, sem conflito e sem tocar em ancestral da fita |
+| **D33** | **Foto B:** camada com parallax → `.hero__foto-revela` com `data-reveal` (32 px + fade, 800 ms via `--reveal-dur`) → imagem com flutuação (±5 px, 9 s, começando aos 3,6 s: dessincronizada da A). **Parallax:** A ×0,06, B ×0,08, teto de 24 px (`data-parallax-max`), **repouso = página no topo** (`data-parallax-repouso="topo"`): no topo, as fotos ficam exatamente no layout aprovado, apoiadas na fita. Desligado em `reduced`, `paused` e `low` | Com o repouso padrão (seção alinhada ao topo), as fotos já apareceriam deslocadas 17–24 px ao carregar |
+| **D34** | **Revelações só abaixo da dobra.** Um script mínimo no fim do `<body>` marca `.reveal-pendente` apenas nos `data-reveal` que estão abaixo da dobra, **depois da 1ª pintura** (medir antes forçava um layout síncrono da página e atrasou o LCP em ~70 ms no Lighthouse). Só os pendentes começam escondidos. Se um pendente entrar na tela antes de o motion subir, aparece na hora, sem animação. Consequência: em 1440×900 e 390×844 o texto do hero já está à vista e **não anima**; a revelação (sobretítulo, 2 linhas do título e corpo, 16 px + fade, 600 ms, 120 ms entre eles) acontece nas telas em que ele começa abaixo da dobra (ex.: 1366×768) | Nada da 1ª tela espera JS (D25) |
+| **D35** | **Botões e links** (MENU, pausa, CTA, "Como chegar", telefones, rodapé, menu): transição de 180 ms (`--t-botao`) só em `background-color`, `color`, `opacity` e `text-decoration-color`. O contorno de foco não entra na transição: aparece na hora | Pedido |
+| **D36** | **Entradas com `animation-fill-mode: backwards`, nunca `both`.** O estado inicial vale durante o atraso; ao terminar, a animação sai de cena. Com `both`, a foto A ficava promovida a camada no compositor para sempre e o texto vizinho mudava de antialiasing (1,4 % dos pixels diferentes do estático em 390 px) | Estado final idêntico ao estático aprovado |
+| **D37** | **Botão de pausa fora do fluxo** (`position: absolute`, à esquerda do MENU): ele aparece só quando o motion sobe, e no fluxo empurrava o MENU (CLS 0,001) | CLS 0 |
+
+**Custo medido (laboratório, Chromium headless; não é aparelho real)**
+
+| Medição | Resultado |
+|---|---|
+| Entrada da fita, 3 s após a navegação, 1440 @1× (quadros descartados) | nenhuma 8 · fade 8 · clip-path 9 |
+| Entrada da fita, 390 @3× CPU 4× (quadros descartados; pior quadro) | nenhuma 18 (200 ms) · fade 20 (233 ms) · clip-path 20 (200 ms) |
+| Lighthouse por variante da fita (3 rodadas) | nenhuma 84/85/85 · fade 85/85/85 · clip-path 81/85/86 (o 81 é a oscilação do simulador já vista na linha de base) |
+| 10 s parado + rolagem até a seção 03, 1440 | sem motion 60 fps / 59,4 fps rolando · high 60 / 59,8 · low 60 / 59,6; 0 tarefas longas; 1 quadro descartado na rolagem nos três |
+| 10 s parado + rolagem até a seção 03, 390 @3× CPU 4× | sem motion 60 / 60,3 · low 59,9 / 60; 0 tarefas longas, 0 descartados |
+| Lighthouse mobile, mediana de 5 | **86** (antes 86); LCP 3,68 s (antes 3,70 s); FCP 2,56 s; TBT 0; CLS 0 |
+| Estado final da entrada × estático | 0,06 % (1440) e 0,00 % (390) dos pixels diferem > 24/255 |
+
+As 2 tarefas longas da carga (~60 ms em 1440; ~150 ms em 390 com CPU 4×) existem também sem motion: são da análise
+do HTML com a fita inline (P4 abaixo).

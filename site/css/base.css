@@ -103,9 +103,17 @@ body {
    aparece como no layout estático. */
 
 /* revelação declarativa (data-reveal): estado inicial */
-.js-motion [data-reveal]:not([data-revealed]) { opacity: 0; }
-.js-motion [data-reveal="up"]:not([data-revealed]) { transform: translateY(var(--reveal-y)); }
-.js-motion [data-reveal="scale"]:not([data-revealed]) { transform: scale(var(--reveal-scale)); }
+/* só os marcados como pendentes (abaixo da dobra ao carregar, D34) começam escondidos */
+.js-motion [data-reveal].reveal-pendente:not([data-revealed]) { opacity: 0; }
+.js-motion [data-reveal="up"].reveal-pendente:not([data-revealed]) { transform: translateY(var(--reveal-y)); }
+.js-motion [data-reveal="scale"].reveal-pendente:not([data-revealed]) { transform: scale(var(--reveal-scale)); }
+
+/* Botões e links (D35): cor e opacidade em 180 ms. O contorno de foco não entra na transição:
+   aparece na hora. */
+.pilula, .visite__link, .visite__tel, .rodape a, .menu a {
+  transition: background-color var(--t-botao) var(--ease-soft), color var(--t-botao) var(--ease-soft),
+    opacity var(--t-botao) var(--ease-soft), text-decoration-color var(--t-botao) var(--ease-soft);
+}
 
 /* pausa: botão (data-motion="paused") e aba oculta (data-page-hidden) congelam as animações CSS */
 :root[data-motion="paused"] *,
@@ -130,3 +138,16 @@ body {
 html.lenis, html.lenis body { height: auto; }
 html.lenis.lenis-smooth { scroll-behavior: auto !important; }
 .lenis.lenis-smooth iframe { pointer-events: none; }
+
+/* Entrada da fita (D31): única, só com a página aberta no topo, CSS puro. A fita não se move:
+   "high" revela de cima para baixo por clip-path (a janela visível em 1400 ms; o resto da página
+   no último quadro, fora da tela); "low" só faz fade (opacity fica no compositor; clip-path
+   costuma redesenhar o SVG a cada quadro, caro em GPU fraca). Custo medido: DESIGN.md §9. */
+@keyframes fita-revela {
+  from { clip-path: inset(0 0 100% 0); }
+  99.9% { clip-path: inset(0 0 calc(100% - 100vh) 0); }
+  to { clip-path: inset(0); }
+}
+@keyframes fita-fade { from { opacity: 0; } }
+.js-motion.entrada-topo .fita { animation: fita-fade 1400ms var(--ease-soft) 200ms backwards; }
+.js-motion.entrada-topo[data-quality="high"] .fita { animation-name: fita-revela; }

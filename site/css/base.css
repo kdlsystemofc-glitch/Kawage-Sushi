@@ -157,3 +157,26 @@ html.lenis.lenis-smooth { scroll-behavior: auto !important; }
 @keyframes fita-fade { from { opacity: 0; } }
 .js-motion.entrada-topo .fita { animation: fita-fade 1400ms var(--ease-soft) 200ms backwards; }
 .js-motion.entrada-topo[data-quality="high"] .fita { animation-name: fita-revela; }
+
+/* Links da Visite e do rodapé (D49): além do sublinhado de sempre, uma barra em laca cresce da esquerda
+   (scaleX) no hover — só em dispositivos com hover de verdade. O foco por teclado continua com o contorno. */
+@media (hover: hover) {
+  .visite__link, .visite__tel, .rodape a { position: relative; }
+  .visite__link::after, .visite__tel::after, .rodape a::after {
+    content: "";
+    position: absolute;
+    left: 0; right: 0;
+    top: calc(50% + 0.78em);
+    height: 2px;
+    background: var(--laca);
+    transform: scaleX(0);
+    transform-origin: left center;
+    transition: transform var(--t-botao) var(--ease-out);
+    pointer-events: none;
+  }
+  .visite__link:hover::after, .visite__tel:hover::after, .rodape a:hover::after { transform: scaleX(1); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .visite__link::after, .visite__tel::after, .rodape a::after { transition: none; }
+}
+:root[data-motion="paused"] .visite__link::after, :root[data-motion="paused"] .visite__tel::after, :root[data-motion="paused"] .rodape a::after { transition: none; }

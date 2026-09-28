@@ -10,7 +10,7 @@
     "fechar-fase": "bash scripts/fechar-fase.sh",
     "assets": "python scripts/build_assets.py",
     "fita": "node scripts/build_fita.mjs",
-    "test:motion": "node scripts/test-motion.mjs && node scripts/test-motion-hero.mjs && node scripts/test-motion-sec3.mjs && node scripts/test-motion-sec4.mjs",
+    "test:motion": "node scripts/test-motion.mjs && node scripts/test-motion-hero.mjs && node scripts/test-motion-sec3.mjs && node scripts/test-motion-sec4.mjs && node scripts/test-motion-fase2.mjs",
     "test:fita": "python tests/fita/verificar_empilhamento.py site/index.html",
     "test:fita:self": "python tests/fita/testar_verificador.py"
   },

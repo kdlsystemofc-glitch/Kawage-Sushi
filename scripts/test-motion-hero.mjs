@@ -183,7 +183,14 @@ for (const [w, h] of [[1440, 900], [390, 844]]) {
   const flutua = () => page.evaluate(() => document.querySelector(".flutua--a").getAnimations().filter((a) => a.animationName === "flutua-a").map((a) => ({ estado: a.playState, t: Math.round(a.currentTime) }))[0]);
   const f0 = await flutua();
   ok(f0?.estado === "running", `high: flutuação da foto A rodando (${JSON.stringify(f0)})`);
-  ok(await page.evaluate(() => document.querySelector(".flutua--b").getAnimations().some((a) => a.animationName === "flutua-b")), "high: flutuação da foto B, com período e início diferentes (9 s, 3,6 s)");
+  // a foto B só flutua com ≥ 50 % dela na tela (D50): no topo de 1440×900 ela mal aparece
+  const bNoTopo = await page.evaluate(() => document.querySelector(".flutua--b").getAnimations().some((a) => a.animationName === "flutua-b"));
+  await page.evaluate(() => motion.scrollTo("#hero", { imediato: true }));
+  await page.waitForTimeout(4200);
+  const bNaTela = await page.evaluate(() => document.querySelector(".flutua--b").getAnimations().some((a) => a.animationName === "flutua-b"));
+  ok(!bNoTopo && bNaTela, `high: flutuação da foto B só com ela na tela (topo: ${bNoTopo}, com o hero na tela: ${bNaTela}), período e início próprios (9 s, 3,6 s)`);
+  await page.evaluate(() => motion.scrollTo("#topo", { imediato: true }));
+  await page.waitForTimeout(3300);
   await page.click("[data-pause]");
   await page.waitForTimeout(50);
   const p1 = await flutua();

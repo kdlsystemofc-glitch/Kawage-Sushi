@@ -172,6 +172,7 @@
       if (lenis || !Lenis) return;
       lenis = api.lenis = new Lenis({ autoRaf: false, anchors: false });
       lenis.on("scroll", ScrollTrigger.update);
+      if (raiz.classList.contains("menu-aberto")) lenis.stop();
       gsap.ticker.add(raf);
       gsap.ticker.lagSmoothing(0);
     };
@@ -212,7 +213,7 @@
       });
     });
 
-    // ── loops: pausados fora da tela (margem de 10 %) ─────────
+    // ── loops: fora da tela saem (data-offscreen, D43/D50) ───────
     const loops = (() => {
       const anims = new Map();   // el → Set({ anim, grupo })
       const visivel = new Map(); // el → fração visível (0 = fora da tela)
@@ -231,12 +232,16 @@
       };
       const io = new IntersectionObserver((entradas) => {
         for (const { target, isIntersecting, intersectionRatio } of entradas) {
-          const naTela = isIntersecting && intersectionRatio > 0; // só encostar na borda não conta
+          // D50: o loop só roda com pelo menos metade do elemento na tela (orçamento de 3 loops simultâneos:
+          // numa tela alta, o fim de uma seção e o começo da outra aparecem juntos)
+          const naTela = isIntersecting && intersectionRatio >= 0.5;
           target.toggleAttribute("data-offscreen", !naTela);       // loops CSS (base.css)
           visivel.set(target, naTela ? intersectionRatio : 0);
         }
         decidir();
-      }, { rootMargin: "10% 0px", threshold: [0, 0.1, 0.25, 0.5, 0.75, 1] });
+      // margem 0 (D50): loop só com o elemento de fato na tela ("só com a foto visível"); com 10 % de
+      // margem, as posições de transição entre seções chegavam a 4 loops simultâneos
+      }, { rootMargin: "0px", threshold: [0, 0.1, 0.25, 0.5, 0.75, 1] });
       return {
         observar: (el) => io.observe(el),
         add(el, anim, grupo) {
@@ -413,8 +418,13 @@
 
     // prefers-reduced-motion em tempo real e o botão de pausa (data-motion)
     mqReduzido.addEventListener("change", aplicar);
-    new MutationObserver(() => { if (calcularModo() !== modo) aplicar(); })
-      .observe(raiz, { attributes: true, attributeFilter: ["data-motion"] });
+    // menu aberto (js/menu.js põe html.menu-aberto): o Lenis para junto com a rolagem nativa
+    let menuAberto = false;
+    new MutationObserver(() => {
+      if (calcularModo() !== modo) aplicar();
+      const agora = raiz.classList.contains("menu-aberto");
+      if (agora !== menuAberto) { menuAberto = agora; if (agora) lenis?.stop(); else lenis?.start(); }
+    }).observe(raiz, { attributes: true, attributeFilter: ["data-motion", "class"] });
 
     // aba oculta: tudo pausa (CSS via data-page-hidden, GSAP via timeline global)
     const visibilidade = () => {

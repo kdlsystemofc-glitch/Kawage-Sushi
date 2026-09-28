@@ -575,3 +575,14 @@ Custo: `node scripts/medir-motion.mjs custo3`.
 Testes: `scripts/test-motion-sec4.mjs` (em `npm run test:motion`): quadros a partir do disparo, empilhamento e "A" coberto em cada
 quadro, estado final × estático (1440: 0,00 % por luminância; 390: 0,00 % pixel a pixel), contraste do texto (título 13,9,
 corpo 7,3–7,8, total da nota 4,6–5,1), navegação (menu → Visite e volta, normal e rápido), modos, CTA e vídeos.
+
+### Motion de Visite, rodapé, menu e coerência global (fase 2, 28/09/2026)
+
+| # | Decisão | Por quê |
+|---|---|---|
+| **D48** | **Menu em overlay (`js/menu.js`, sem GSAP, `defer`).** Sem JS o MENU é um link para `#menu` e o overlay abre por `:target` (o "Fechar" aponta para uma âncora inexistente, sem rolar). Com JS: vira botão (`role="button"`, `aria-expanded`, `aria-controls`); fade de 320 ms com os itens em sequência (16 px + fade, 60 ms entre eles); fechamento de 200 ms sem sequência; foco no "Fechar" ao abrir, foco preso (Tab/Shift+Tab), Esc fecha, foco volta ao MENU; `html.menu-aberto` trava a rolagem e para o Lenis; nada de `inert` ou `pointer-events: none` na transição (clicável no 1º quadro); 20 aberturas/fechamentos seguidos terminam coerentes. Reduced: só fade de 200 ms; pausa: instantâneo | Acima da dobra (D25) e acessível sem JS |
+| **D49** | **Visite:** título + 3 colunas em grupo (16 px + fade, 600 ms, 100 ms entre colunas). **Links da Visite e do rodapé:** barra em laca que cresce (`scaleX`, 180 ms) só em `@media (hover: hover)`; o sublinhado de sempre continua, e o foco por teclado mantém o contorno. **Rodapé:** fade simples, nunca escondido (fim da página, tecla End, navegação direta: testados) | Pedido da fase 2 |
+| **D50** | **Orçamento de loops: no máximo 3 simultâneos.** Um loop só roda com **≥ 50 % do elemento na tela** (o `IntersectionObserver` perdeu a margem de 10 % herdada do Asami). Antes: pico de 4 nas transições entre seções; depois: 3 em 1440 e em 390 (high), 0 no celular em low. Inventário completo e contagem por posição: `motion-inventario.md` | Tela alta mostra duas seções ao mesmo tempo |
+
+Testes: `scripts/test-motion-fase2.mjs` (em `npm run test:motion`; `--loops` só conta os loops). Vídeos da página inteira:
+`screenshots/motion/pagina-inteira-1440.webm` e `-390.webm`.

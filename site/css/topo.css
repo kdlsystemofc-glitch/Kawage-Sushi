@@ -59,16 +59,63 @@
 .cabecalho__menu:focus-visible { outline: none; }
 .cabecalho__menu:focus-visible .pilula { outline: 2px solid var(--laca); outline-offset: 3px; }
 
+/* ── Menu em overlay (D48). Sem JS: abre por :target (o MENU é um link para #menu). Com JS (js/menu.js):
+   [hidden] controla a presença e .menu--visivel a transição. Utilizável desde o 1º quadro: nada de inert
+   nem pointer-events: none durante a transição. ── */
 .menu {
-  position: absolute;
-  top: calc(100% + var(--esp-1));
-  right: calc(var(--u) * 11);
-  padding: var(--esp-2) var(--esp-3);
-  background: var(--tinta);
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: calc(var(--u) * 24);
+  padding: var(--esp-4);
+  background: var(--pedra);
   color: var(--creme);
-  border-radius: 12px;
+  overscroll-behavior: contain;
 }
-.menu a { display: flex; align-items: center; min-height: var(--toque); text-decoration: none; }
+.menu:target, .menu--js:not([hidden]) { display: flex; }
+.menu__fechar {
+  position: absolute;
+  top: calc(var(--u) * 9);
+  right: calc(var(--u) * 11);
+  display: inline-flex; align-items: center; justify-content: center;
+  min-height: var(--toque); min-width: var(--toque);
+  text-decoration: none;
+}
+.menu__fechar .pilula { background: var(--creme); color: var(--tinta); }
+.menu__fechar:hover .pilula { background: var(--laca); color: var(--creme-luz); }
+.menu__fechar:focus-visible { outline: none; }
+.menu__fechar:focus-visible .pilula { outline: 2px solid var(--creme); outline-offset: 3px; }
+.menu__lista { display: grid; justify-items: center; gap: calc(var(--u) * 6); }
+.menu__lista a {
+  display: flex; align-items: center; min-height: var(--toque);
+  font-family: var(--fonte-titulo); font-weight: 500;
+  font-size: max(2rem, calc(var(--u) * 30));
+  letter-spacing: var(--ls-titulo); text-transform: uppercase; text-decoration: none; color: var(--creme);
+}
+.menu__lista a:hover { color: var(--laca-brilho); }
+.menu__lista a:focus-visible { outline: 2px solid var(--creme); outline-offset: 4px; }
+
+/* transições (só com JS): abre em 320 ms com os itens em sequência (60 ms entre eles); fecha em 200 ms, sem sequência */
+.menu--js { opacity: 0; transition: opacity 200ms var(--ease-soft); }
+.menu--js .menu__lista li { opacity: 0; translate: 0 16px; transition: opacity 200ms var(--ease-soft), translate 200ms var(--ease-soft); }
+.menu--js.menu--visivel { opacity: 1; transition-duration: 320ms; }
+.menu--js.menu--visivel .menu__lista li { opacity: 1; translate: 0 0; transition-duration: 320ms; transition-timing-function: var(--ease-out); }
+.menu--js.menu--visivel .menu__lista li:nth-child(2) { transition-delay: 60ms; }
+.menu--js.menu--visivel .menu__lista li:nth-child(3) { transition-delay: 120ms; }
+.menu--js.menu--visivel .menu__lista li:nth-child(4) { transition-delay: 180ms; }
+/* reduced: só fade de 200 ms, sem deslocamento nem sequência */
+@media (prefers-reduced-motion: reduce) {
+  .menu--js, .menu--js.menu--visivel { transition-duration: var(--t-fade) !important; }
+  .menu--js .menu__lista li, .menu--js.menu--visivel .menu__lista li { translate: none; transition: none !important; opacity: 1; }
+}
+/* pausa: sem transição nenhuma */
+:root[data-motion="paused"] .menu--js, :root[data-motion="paused"] .menu--js .menu__lista li { transition: none !important; }
+/* rolagem travada só com o menu aberto */
+html.menu-aberto { overflow: hidden; }
 
 /* ── seção ── */
 .topo {

@@ -83,6 +83,7 @@
   <link rel="stylesheet" href="css/grelhados.css">
   <link rel="stylesheet" href="css/rodizio.css">
   <link rel="stylesheet" href="css/visite.css">
+  <script src="js/menu.js" defer></script>
 </head>
 <body>
   <a class="pular" href="#conteudo">Pular para o conteúdo</a>
@@ -100,15 +101,21 @@
         <svg class="icone-play" viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="M5.5 3.5v9l7-4.5z" fill="currentColor"/></svg>
       </span>
     </button>
-    <button class="cabecalho__menu" type="button" aria-expanded="false" aria-controls="menu">
+    <!-- MENU (D48): sem JS é um link para #menu (o overlay abre por :target); js/menu.js o transforma em botão. -->
+    <a class="cabecalho__menu" href="#menu">
       <span class="pilula">
         Menu
         <svg viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="M2 4.5h12M2 8h12M2 11.5h12" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
       </span>
-    </button>
+    </a>
     </div>
-    <nav class="menu" id="menu" aria-label="Principal" hidden>
-      <ul role="list">
+    <nav class="menu" id="menu" aria-label="Principal" data-lenis-prevent>
+      <a class="menu__fechar" href="#fechar-menu">
+        <span class="pilula">Fechar
+          <svg viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="M4 4l8 8M12 4l-8 8" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+        </span>
+      </a>
+      <ul class="menu__lista" role="list">
         <li><a href="#hero">A casa</a></li>
         <li><a href="#grelhados">Grelhados</a></li>
         <li><a href="#rodizio">Rodízio</a></li>
@@ -260,9 +267,9 @@
         </a>
 
         <div class="visite__conteudo grade">
-          <h2 class="visite__titulo" id="visite-titulo">Visite</h2>
+          <h2 class="visite__titulo" id="visite-titulo" data-reveal="up" data-reveal-grupo="visite">Visite</h2>
 
-          <div class="visite__bloco">
+          <div class="visite__bloco" data-reveal="up" data-reveal-grupo="visite" data-reveal-delay="100">
             <p class="sobre">Endereço</p>
             <address>
               R. Continental, 372<br>
@@ -272,7 +279,7 @@
             <a class="visite__link" href="https://www.google.com/maps/search/?api=1&amp;query=Kawage%20Sushi%2C%20R.%20Continental%2C%20372%2C%20S%C3%A3o%20Bernardo%20do%20Campo" rel="noopener">Como chegar</a>
           </div>
 
-          <div class="visite__bloco">
+          <div class="visite__bloco" data-reveal="up" data-reveal-grupo="visite" data-reveal-delay="200">
             <p class="sobre">Telefone</p>
             <p><a class="visite__tel" href="tel:+551141215276">(11) 4121-5276</a></p>
             <p class="sobre visite__sobre-2">Horário</p>
@@ -280,7 +287,7 @@
             <p>Confira o horário pelo telefone.</p>
           </div>
 
-          <div class="visite__bloco">
+          <div class="visite__bloco" data-reveal="up" data-reveal-grupo="visite" data-reveal-delay="300">
             <p class="sobre">Serviços</p>
             <ul class="visite__lista" role="list">
               <li>Refeição no local</li>
@@ -302,7 +309,7 @@
   </main>
 
   <footer class="rodape">
-    <div class="rodape__conteudo">
+    <div class="rodape__conteudo" data-reveal="fade">
       <img class="rodape__logo" src="assets/logo-kawage-150.webp" alt="Kawage Sushi" width="150" height="150" loading="lazy">
       <p>R. Continental, 372 · Jardim do Mar · São Bernardo do Campo, SP</p>
       <p><a href="tel:+551141215276">(11) 4121-5276</a></p>
@@ -336,14 +343,6 @@
       });
     })(document.documentElement);
 
-    // Menu: só abre/fecha a lista.
-    const botao = document.querySelector(".cabecalho__menu");
-    const menu = document.getElementById("menu");
-    botao.addEventListener("click", () => {
-      const aberto = botao.getAttribute("aria-expanded") === "true";
-      botao.setAttribute("aria-expanded", String(!aberto));
-      menu.hidden = aberto;
-    });
   </script>
 </body>
 </html>

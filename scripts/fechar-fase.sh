@@ -15,6 +15,7 @@ passo() { # nome, comando
   echo "$saida" >> "$LOG"
   if [ $codigo -eq 0 ]; then echo "✓ $nome"; else echo "✗ $nome"; echo "$saida" | grep -E "✗|ERRO|Error" | head -8; falhou=1; fi
 }
+passo "build em dia (index = fontes)" node scripts/build.mjs --check
 passo "test:motion" npm run -s test:motion
 passo "autoteste da fita (7/7)" python tests/fita/testar_verificador.py
 passo "empilhamento com motion (390, 768, 1440)" python tests/fita/verificar_empilhamento.py --motion

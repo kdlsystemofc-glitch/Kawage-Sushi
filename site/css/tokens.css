@@ -1,25 +1,13 @@
 /* Tokens — única fonte de cores, fontes, espaçamentos e camadas (DESIGN.md §3, §4.6, §7). */
 
-@font-face {
-  font-family: "Cormorant Garamond";
-  font-style: normal;
-  font-weight: 400;
-  font-display: swap;
-  src: url("../assets/fonts/cormorant-garamond-latin-400-normal.woff2") format("woff2");
-}
+/* Fontes auto-hospedadas (D51): só o que o site usa — Cormorant Garamond 500 (títulos e wordmarks) e
+   Instrument Sans variável (eixo wght 400–700; o site usa 400, 500 e 600). Licença SIL OFL 1.1 (README). */
 @font-face {
   font-family: "Cormorant Garamond";
   font-style: normal;
   font-weight: 500;
   font-display: swap;
   src: url("../assets/fonts/cormorant-garamond-latin-500-normal.woff2") format("woff2");
-}
-@font-face {
-  font-family: "Cormorant Garamond";
-  font-style: normal;
-  font-weight: 600;
-  font-display: swap;
-  src: url("../assets/fonts/cormorant-garamond-latin-600-normal.woff2") format("woff2");
 }
 @font-face {
   font-family: "Instrument Sans";

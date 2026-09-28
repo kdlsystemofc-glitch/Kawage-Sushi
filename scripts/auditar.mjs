@@ -101,8 +101,9 @@ const MEDIR = () => {
   }
   // fita
   const fita = document.querySelector("[data-fita]");
-  const desenho = [...fita.querySelectorAll("svg")].find((s) => getComputedStyle(s).display !== "none");
-  out.fita = { desenho: desenho?.getAttribute("class"), caixa: abs(r(fita)), palco: abs(r(document.querySelector(".palco"))) };
+  // fita inline (<svg> com dois desenhos) ou externa (<img>, D52)
+  const desenho = fita.tagName === "IMG" ? `img ${fita.getAttribute("src").split("/").pop()}` : [...fita.querySelectorAll("svg")].find((s) => getComputedStyle(s).display !== "none")?.getAttribute("class");
+  out.fita = { desenho, caixa: abs(r(fita)), palco: abs(r(document.querySelector(".palco"))) };
   const escuro = document.querySelector(".escuro");
   out.escuro = abs(r(escuro));
   out.secoesEscuras = [...escuro.querySelectorAll("[data-secao]")].map((s) => ({ nome: s.dataset.secao, ...abs(r(s)) }));

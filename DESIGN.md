@@ -586,3 +586,39 @@ corpo 7,3–7,8, total da nota 4,6–5,1), navegação (menu → Visite e volta,
 
 Testes: `scripts/test-motion-fase2.mjs` (em `npm run test:motion`; `--loops` só conta os loops). Vídeos da página inteira:
 `screenshots/motion/pagina-inteira-1440.webm` e `-390.webm`.
+
+## 10. Otimização (fase 3, 28/09/2026)
+
+Linha de base: `otimizacao-baseline.md`. Nada visual nem de tempo de motion mudou: regressão visual das 12 telas, estático e
+estado final do motion, contra o pré-otimização (`node scripts/regressao-visual.mjs comparar`): pior caso 0,20 %.
+
+| # | Decisão | Resultado |
+|---|---|---|
+| **D51** | **Fontes:** já eram auto-hospedadas (o site nunca usou o Google Fonts). Saíram os pesos não usados da Cormorant (400 e 600); ficam a Cormorant 500 e a Instrument Sans variável (usa 400/500/600). Preload só das duas (ambas acima da dobra). Reservas com `size-adjust` mantidas (CLS 0). O CSS embutido para `file://` (D29) foi regenerado com as mesmas duas | Fontes 100 → 53 KB; `fontes-file.css` 131 → 70 KB (só por `file://`) |
+| **D52** | **Fita em arquivo externo** (`site/assets/fita.<hash>.svg`, P4): um `<img data-fita>` filho direto da raiz; os dois desenhos no mesmo SVG, escolhidos por `@media` dentro dele. Mantém o teste de empilhamento, o `file://` e o site sem JS (testados). `fetchpriority="low"`: decorativa, carrega depois da foto A | HTML 290 → 41 KB (74 → 11 KB com gzip); tarefas longas na carga no desktop 2 → 0. No celular simulado o SVG passou a ser lido numa tarefa própria (~57 ms com CPU 4×) — ver abaixo |
+| **D53** | **Imagens:** versão de 400 px para celular (foto A, chapa, shimeji); `sizes` pelo tamanho real exibido em cada faixa; `loading="lazy"` só abaixo da dobra (a foto B **deixou** de ser lazy: aparece na 1ª tela em 1440×900 e 390×844) com `fetchpriority="low"`; `fetchpriority="high"` só na foto A. **A foto B não tem versão de 400:** a textura fina do sushi perdia detalhe (0,57–0,62 % dos pixels em 430 px, acima da tolerância). Recompressão em qualidade **76** (era 82), aprovada pela regressão visual | WebP 1.173 → 993 KB no total gerado (−15 %) |
+| **D54** | **CSS e JS:** os 8 CSS viram um só, minificado por um minificador próprio conservador (não remove declarações repetidas — as alternativas de Safari antigo continuam: `100vh`/`100svh`, `overflow-x: hidden`/`clip`, `@supports not (text-box…)`) e vão **inline** no `<head>`, inteiros: com "crítico + resto assíncrono", as seções 03 e 04, que já aparecem na 1ª tela em 768×1024, piscariam sem estilo. `core.js` e `menu.js` minificados com terser e hash no nome. O script das revelações pendentes mede depois da 1ª pintura (rAF + `setTimeout`) | CSS 38,6 → 22,8 KB (5,4 KB gzip), nenhum CSS bloqueando; `core.js` 22,4 → 8,3 KB (3,6 KB gzip); `menu.js` 3,2 → 1,5 KB (0,7 KB gzip) |
+
+**Resultado (Lighthouse mobile, mediana de 5):** desempenho **85 → 99**; FCP 2,72 → 0,77 s; **LCP 3,77 → 2,04 s**; TBT 0; CLS 0;
+peso 878 → 800 KB. O salto de LCP veio de tirar a fita do HTML e de dar prioridade baixa à fita e à foto B (sem isso, os dois
+disputavam banda com a foto A e o LCP subia para 4,29 s).
+
+**O que sobrou:** no celular simulado (CPU 4×) a carga ainda tem 2 tarefas longas: a leitura do SVG da fita como imagem
+(~57 ms) e o layout inicial da página inteira (~164 ms com CPU 4×, ~40 ms sem desaceleração). Antes os 8 CSS externos
+dividiam esse layout em pedaços menores; o trabalho total é parecido. Não afeta TBT nem LCP. Reduzir de verdade exigiria
+menos trechos na fita (P2) — fica para quando o gerador for revisto.
+
+**Ajustes encontrados ao fechar a fase 3:**
+- **Sem `decoding="async"` na fita nem na foto B.** Nas duas ele deixava o navegador pintar a página antes de decodificar a
+  imagem: a foto B (acima da dobra) aparecia um instante depois do resto, e a fita, se o navegador descartasse a versão
+  rasterizada (pouca memória), podia piscar ao voltar. Ficou só o `fetchpriority="low"`.
+- **Servidores embutidos nos testes (`test-motion-hero/sec3/sec4/fase2`) não conheciam `.svg`:** entregavam a fita externa
+  como `application/octet-stream` e o navegador não a desenhava — os testes de "A coberto" acusaram (a fita "sumia").
+  Corrigido (tipo `image/svg+xml`, e também PNG/JPG). O site em si nunca teve o problema (`servir.mjs`, `file://` e qualquer
+  hospedagem entregam SVG com o tipo certo).
+- `node scripts/build.mjs --check` passou a ser só leitura (antes regravava os JS de `js/build/`).
+- **Carregador do motion e o nome com hash:** o `<head>` só ligava o "desistir se o núcleo falhar" quando o arquivo se chamava
+  `core.js`; depois do build ele passou a ser `core.<hash>.js` e essa proteção ficou morta (só restava o limite de 6 s).
+  A regra agora aceita os dois nomes. Achado ao investigar uma falha intermitente da auditoria WebKit com motion (1 em 13
+  rodadas: o motion não ficou pronto em 12 s com a máquina carregada). Essa falha em si é o limite de 6 s agindo como
+  previsto (o site fica no estado estático aprovado); não se repetiu em 12 rodadas seguidas.

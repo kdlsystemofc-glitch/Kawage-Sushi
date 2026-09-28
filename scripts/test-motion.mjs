@@ -49,12 +49,12 @@ const estado = (page) => page.evaluate(() => ({
 {
   const { ctx, page, log, tLoad } = await abrir();
   await page.waitForTimeout(300);
-  const antes = log.pedidos.filter((p) => /js\/(vendor|motion)\//.test(p.url));
+  const antes = log.pedidos.filter((p) => /js\/(vendor\/|motion\/|build\/core\.)/.test(p.url));
   ok(antes.length === 0, "nenhum script de motion pedido antes do 1º gesto (e antes de 2,5 s)");
   ok(await page.evaluate(() => document.documentElement.classList.contains("js-motion")), "html.js-motion posta antes da pintura (modo full)");
   ok(await page.evaluate(() => document.documentElement.dataset.quality === "high"), "qualidade high em 1440 px (8+ núcleos no teste)");
   await subirMotion(page);
-  const motionPedidos = log.pedidos.filter((p) => /js\/(vendor|motion)\//.test(p.url));
+  const motionPedidos = log.pedidos.filter((p) => /js\/(vendor\/|motion\/|build\/core\.)/.test(p.url));
   ok(motionPedidos.length === 4 && motionPedidos.every((p) => p.t >= tLoad()), "gsap, ScrollTrigger, Lenis e core.js pedidos só depois do load");
   const e = await estado(page);
   ok(e.modo === "full" && e.base === "full" && e.lenis && e.jsMotion, `modo full: Lenis ligado, js-motion (${JSON.stringify(e)})`);
@@ -176,7 +176,7 @@ const estado = (page) => page.evaluate(() => ({
   await page.goto(URL_SITE);
   const r = await page.evaluate(() => ({
     jsMotion: document.documentElement.classList.contains("js-motion"),
-    fita: getComputedStyle(document.querySelector(".fita__largo")).display !== "none",
+    fita: (() => { const f = document.querySelector("[data-fita]"); return getComputedStyle(f).display !== "none" && (f.tagName !== "IMG" || f.complete); })(),
     pausa: document.querySelector("[data-pause]").hidden,
     invisiveis: [...document.querySelectorAll("h1, h2, p, img, address, li")].filter((el) => getComputedStyle(el).opacity === "0").length,
   }));

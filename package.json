@@ -7,6 +7,7 @@
     "shots": "node scripts/screenshot.mjs",
     "auditar": "node scripts/auditar.mjs",
     "lh": "node scripts/lighthouse.mjs",
+    "build": "node scripts/build.mjs",
     "fechar-fase": "bash scripts/fechar-fase.sh",
     "assets": "python scripts/build_assets.py",
     "fita": "node scripts/build_fita.mjs",
@@ -19,6 +20,7 @@
     "@fontsource/cormorant-garamond": "^5.3.0",
     "lighthouse": "^13.5.0",
     "playwright": "^1.63.0",
-    "pngjs": "^7.0.0"
+    "pngjs": "^7.0.0",
+    "terser": "^5.51.2"
   }
 }

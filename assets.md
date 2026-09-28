@@ -5,13 +5,13 @@ Nenhum arquivo de `design/` é usado no site.
 
 ## Slots com arquivo
 
-| Slot | Seção | Fonte | Tipo | 800 | 1600 | alt |
-|---|---|---|---|---|---|---|
-| `hero-salmao-bloco-sal` | 02 hero · posição A | `imgi_22_…` (1440×1920) | recorte (birefnet-general) | `hero-salmao-bloco-sal-800.webp` 800×827 (45 KB) | `hero-salmao-bloco-sal-1600.webp` 1027×1062 (62 KB) ⚠ | Fatias de salmão enroladas sobre um bloco de sal rosa |
-| `sushi-variado` | 02 hero · posição B | `imgi_37_…` (1320×1760) | recorte (birefnet-general) | `sushi-variado-800.webp` 800×603 (106 KB) | `sushi-variado-1600.webp` 1180×890 (158 KB) ⚠ | Sushis variados: niguiris maçaricados, hossomakis e joes |
-| `grelhado-chapa` | 03 grelhados · posição C | `imgi_21_…` (1440×1920) | recorte (isnet-general-use) | `grelhado-chapa-800.webp` 800×527 (101 KB) | `grelhado-chapa-1600.webp` 1176×774 (162 KB) ⚠ | Salmão grelhado com legumes na chapa de ferro |
-| `grelhado-close` | 03 grelhados · close | `imgi_70_…` (1440×1920) | moldura | `grelhado-close-800.webp` 800×874 (89 KB) | `grelhado-close-1600.webp` 1440×1574 (191 KB) ⚠ | Postas de salmão grelhado na chapa, de perto |
-| `shimeji-chapa` | 04 rodízio · posição D | `imgi_33_…` (810×1080) | recorte (isnet-general-use) | `shimeji-chapa-800.webp` 531×639 (69 KB) ⚠ | — (fonte pequena demais; usar o de 800) | Shimeji com cebolinha servido na chapa |
+| Slot | Seção | Fonte | Tipo | 400 | 800 | 1600 | alt |
+|---|---|---|---|---|---|---|---|
+| `hero-salmao-bloco-sal` | 02 hero · posição A | `imgi_22_…` (1440×1920) | recorte (birefnet-general) | `hero-salmao-bloco-sal-400.webp` 400×414 (17 KB) | `hero-salmao-bloco-sal-800.webp` 800×827 (39 KB) | `hero-salmao-bloco-sal-1600.webp` 1027×1062 (52 KB) ⚠ | Fatias de salmão enroladas sobre um bloco de sal rosa |
+| `sushi-variado` | 02 hero · posição B | `imgi_37_…` (1320×1760) | recorte (birefnet-general) | `sushi-variado-400.webp` 400×302 (42 KB) | `sushi-variado-800.webp` 800×603 (94 KB) | `sushi-variado-1600.webp` 1180×890 (140 KB) ⚠ | Sushis variados: niguiris maçaricados, hossomakis e joes |
+| `grelhado-chapa` | 03 grelhados · posição C | `imgi_21_…` (1440×1920) | recorte (isnet-general-use) | `grelhado-chapa-400.webp` 400×263 (34 KB) | `grelhado-chapa-800.webp` 800×527 (88 KB) | `grelhado-chapa-1600.webp` 1176×774 (141 KB) ⚠ | Salmão grelhado com legumes na chapa de ferro |
+| `grelhado-close` | 03 grelhados · close | `imgi_70_…` (1440×1920) | moldura | `grelhado-close-400.webp` 400×437 (26 KB) | `grelhado-close-800.webp` 800×874 (70 KB) | `grelhado-close-1600.webp` 1440×1574 (151 KB) ⚠ | Postas de salmão grelhado na chapa, de perto |
+| `shimeji-chapa` | 04 rodízio · posição D | `imgi_33_…` (810×1080) | recorte (isnet-general-use) | `shimeji-chapa-400.webp` 400×481 (37 KB) | `shimeji-chapa-800.webp` 531×639 (56 KB) ⚠ | — (a fonte não rende mais; usar a anterior) | Shimeji com cebolinha servido na chapa |
 | `logo-kawage-150` | cabeçalho, rodapé | `imgi_2…` (150×150) | fundo branco → transparente | — | — | Kawage Sushi |
 
 ## ⚠ Avisos

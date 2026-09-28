@@ -182,15 +182,29 @@ function gerar(nome, d) {
       </svg>`;
 }
 
-const svg = `<!-- fita:inicio (gerado por scripts/build_fita.mjs; não editar à mão) -->
-      <svg class="fita" data-fita aria-hidden="true" focusable="false">
-      ${Object.entries(DESENHOS).map(([n, d]) => gerar(n, d)).join("\n      ")}
-      </svg>
-      <!-- fita:fim -->`;
+// Arquivo SVG externo (D52, P4): cacheável e fora do HTML (a fita inline eram ~270 KB analisados a cada carga).
+// Os dois desenhos ficam no mesmo arquivo; o @media DENTRO do SVG escolhe um — num <img>, ele responde à largura
+// da imagem (= a largura do palco, que abaixo de 768 px é a tela). A fita continua sendo um único [data-fita],
+// filho direto da raiz (teste de empilhamento), funciona por file:// e aparece sem JS.
+import { createHash } from "node:crypto";
+import { readdir, unlink } from "node:fs/promises";
+const conteudo = `<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%">
+<style>.fita__estreito{display:none}@media (max-width:767.84px){.fita__largo{display:none}.fita__estreito{display:inline}}</style>
+${Object.entries(DESENHOS).map(([n, d]) => gerar(n, d).replace(/\n\s+/g, "\n")).join("\n")}
+</svg>
+`;
+const h = createHash("sha256").update(conteudo).digest("hex").slice(0, 8);
+const pastaAssets = new URL("../site/assets/", import.meta.url);
+for (const f of await readdir(pastaAssets)) if (/^fita\.[0-9a-f]{8}\.svg$/.test(f)) await unlink(new URL(f, pastaAssets));
+await writeFile(new URL(`fita.${h}.svg`, pastaAssets), conteudo);
 
+const img = `<!-- fita:inicio (gerado por scripts/build_fita.mjs; não editar à mão) -->
+      <img class="fita" data-fita src="assets/fita.${h}.svg" alt="" aria-hidden="true" fetchpriority="low">
+      <!-- fita:fim -->`;
 const arq = new URL("../site/index.html", import.meta.url);
 const html = await readFile(arq, "utf8");
-const novo = html.replace(/<!-- fita:inicio[\s\S]*?<!-- fita:fim -->/, svg);
+const novo = html.replace(/<!-- fita:inicio[\s\S]*?<!-- fita:fim -->/, img);
 if (novo === html && !html.includes("fita:inicio")) throw new Error("marcadores da fita não encontrados");
 await writeFile(arq, novo);
-console.log(`fita: ${(svg.length / 1024).toFixed(0)} KB de SVG injetados em site/index.html`);
+const { gzipSync } = await import("node:zlib");
+console.log(`fita: assets/fita.${h}.svg — ${(conteudo.length / 1024).toFixed(0)} KB (gzip ${(gzipSync(conteudo).length / 1024).toFixed(0)} KB), fora do HTML`);

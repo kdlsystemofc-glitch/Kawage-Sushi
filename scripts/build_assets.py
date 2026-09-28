@@ -18,7 +18,10 @@ from PIL import Image, ImageFilter
 RAIZ = Path(__file__).resolve().parent.parent
 FONTE = RAIZ / "imagens"
 DESTINO = RAIZ / "site" / "assets"
-LARGURAS = (800, 1600)
+LARGURAS = (400, 800, 1600)  # 400: degrau para celular (fase 3, D53)
+# Qualidade WebP: python scripts/build_assets.py --qualidade 76 (padrão 82). A recompressão só é aceita se a
+# regressão visual passar (até 0,5 % dos pixels com diferença > 24/255 no tamanho exibido).
+QUALIDADE = int(sys.argv[sys.argv.index("--qualidade") + 1]) if "--qualidade" in sys.argv else 76  # 76: aprovada na regressão visual (fase 3, D53)
 
 # slot, arquivo-fonte (id imgi_), tipo, modelo de recorte, caixa de corte (fração l,t,r,b), alt, seção
 SLOTS = [
@@ -118,7 +121,7 @@ def salvar(img, nome):
         h = round(img.height * w / img.width)
         out = img.resize((w, h), Image.LANCZOS) if w != img.width else img
         caminho = DESTINO / f"{nome}-{alvo}.webp"
-        out.save(caminho, "WEBP", quality=82, method=6, **({"exact": False} if out.mode == "RGBA" else {}))
+        out.save(caminho, "WEBP", quality=QUALIDADE, method=6, **({"exact": False} if out.mode == "RGBA" else {}))
         saidas.append((caminho.name, w, h, caminho.stat().st_size, w < alvo))
     return saidas
 
@@ -157,7 +160,7 @@ def escrever_md(linhas):
           "Gerado por `scripts/build_assets.py` (não editar à mão). Todas as fontes são fotos reais de `imagens/`.",
           "Nenhum arquivo de `design/` é usado no site.", "",
           "## Slots com arquivo", "",
-          "| Slot | Seção | Fonte | Tipo | 800 | 1600 | alt |", "|---|---|---|---|---|---|---|"]
+          "| Slot | Seção | Fonte | Tipo | 400 | 800 | 1600 | alt |", "|---|---|---|---|---|---|---|---|"]
     avisos = []
     for nome, src, (sw, sh), tipo, modelo, alt, secao, saidas in linhas:
         cel = []
@@ -166,9 +169,9 @@ def escrever_md(linhas):
             if menor:
                 avisos.append(f"`{arq}`: a fonte ({src[:8]}…, {sw}×{sh}) rende só {w} px de largura após o corte; não foi ampliada.")
         t = f"recorte ({modelo})" if tipo == "recorte" else "moldura"
-        if len(cel) == 1:
-            cel.append("— (fonte pequena demais; usar o de 800)")
-        md.append(f"| `{nome}` | {secao} | `{src[:8]}…` ({sw}×{sh}) | {t} | {cel[0]} | {cel[1]} | {alt} |")
+        while len(cel) < len(LARGURAS):
+            cel.append("— (a fonte não rende mais; usar a anterior)")
+        md.append(f"| `{nome}` | {secao} | `{src[:8]}…` ({sw}×{sh}) | {t} | {' | '.join(cel)} | {alt} |")
     md += ["| `logo-kawage-150` | cabeçalho, rodapé | `imgi_2…` (150×150) | fundo branco → transparente | — | — | Kawage Sushi |", ""]
     md += ["## ⚠ Avisos", ""]
     md += [f"- **Slot sem arquivo: {n}** ({onde}). {motivo}" for n, onde, motivo in SEM_ARQUIVO]
